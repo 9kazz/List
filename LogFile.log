@@ -1,0 +1,11 @@
+List_Verify: index out of buffer (list->head)
+Warning code: 16 (HEAD_OUT_OF_BUF)
+
+List_Verify: index out of buffer (list->tail)
+Warning code: 32 (TAIL_OUT_OF_BUF)
+
+List_Verify: verification ended with warning: 48
+List_Verify: verification is success (Error_code = 0) 
+List_Verify: verification is success (Error_code = 0) 
+List_Verify: verification is success (Error_code = 0) 
+List_Verify: verification is success (Error_code = 0) 
