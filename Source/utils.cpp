@@ -8,11 +8,12 @@
 #include "list.h"
 
 ListErr List_Dump_graphviz(ListStruct list, FILE* output_file) {
-    // List_Verify(list);
+
+    ONDEBUG(&list)
     
     fprintf(output_file, "digraph List {\n");
     fprintf(output_file, "\trankdir = LR;\n");
-    fprintf(output_file, "\tnode [shape = Mrecord];\n\n");
+    fprintf(output_file, "\tnode [shape = Mrecord, style = \"filled\", fillcolor = \"#e9e6f2ff\"];\n\n");
 
     //--------------------------------  D A T A -- N O D E S  -----------------------------------------------
 
@@ -74,7 +75,7 @@ ListErr List_Dump_graphviz(ListStruct list, FILE* output_file) {
     fprintf(output_file, "\tedge [color = green, weight = 1];\n\n");
 
     size_t el_ind = list.free;
-    
+
     while (list.next[el_ind] != 0) {
         fprintf(output_file, "\tnode_%d -> node_%d;\n", el_ind, list.next[el_ind]);
         el_ind = list.next[el_ind];
@@ -93,18 +94,10 @@ ListErr List_Dump_graphviz(ListStruct list, FILE* output_file) {
     fprintf(output_file, "\tnode_free -> node_%d [color = green];\n", list.free);
 
     fprintf(output_file, "\t}\n\n");
-    
-    // //--------------------------------------  P R E V  ---------------------------------------------------
-
-    // fprintf(output_file, "\n\t{\n");
-
-    // for (size_t el_ind = 0; el_ind < list.size; el_ind++)
-    //     fprintf(output_file, "\tnode_%d -> node_%d;\n", el_ind, list.prev[el_ind]);
-
-    // fprintf(output_file, "\t}\n");
-
 
     fprintf(output_file, "}\n");
 
-    return 0;
+    ONDEBUG(&list)
+
+    return NO_ERRORS;
 }

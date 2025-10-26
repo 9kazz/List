@@ -35,18 +35,18 @@ ListStruct List_Ctor(size_t size) {
 
 ListErr List_Dtor(ListStruct* list) {
 
-    List_Verify(list);
+    ONDEBUG(list);
 
     free(list -> data);
     free(list -> next);
     free(list -> prev);
 
-    return 0;
+    return NO_ERRORS;
 }
 
-ListErr List_Verify(ListStruct* list) { //TODO: Dump and ONDEBUG
+ListErr List_Verify(ListStruct* list) {
 
-    int Error_code = 0;
+    ListErr Error_code = 0;
 
     #define IF_NULL_POINTER(pointer, error)                                                                     \
         if (pointer == NULL) {                                                                                  \
@@ -68,14 +68,17 @@ ListErr List_Verify(ListStruct* list) { //TODO: Dump and ONDEBUG
     #undef IF_NULL_POINTER
 
     #define IF_INDEX_OUT_OF_BUF(index, error)                                                                   \
-        if (index < 1 ||                                                                                        \
-            index > list->size - 1)                                                                             \
+        if (index < 0 ||                                                                                        \
+            index > list -> size - 1)                                                                           \
         {                                                                                                       \
                                                                                                                 \
             fprintf(LogFile, "List_Verify: index out of buffer (" #index ")\n");                                \
-            fprintf(LogFile, "Warning code: %d (" #error ")\n\n", error);                                       \
+            fprintf(LogFile, "Error code: %d (" #error ")\n\n", error);                                         \
                                                                                                                 \
             Error_code = Error_code | error;                                                                    \
+                                                                                                                \
+            fprintf(LogFile, "List_Verify: verification ended with critical error: %d\n", Error_code);          \
+            return Error_code;                                                                                  \
         }        
 
     IF_INDEX_OUT_OF_BUF(list->head, HEAD_OUT_OF_BUF)
@@ -94,7 +97,8 @@ ListErr List_Verify(ListStruct* list) { //TODO: Dump and ONDEBUG
 }
 
  ListErr List_Insert(ListStruct* list, size_t ind, int value) {
-    List_Verify(list);
+
+    ONDEBUG(list);
 
     size_t first_free_ind_data = list -> free;
 
@@ -144,5 +148,7 @@ ListErr List_Verify(ListStruct* list) { //TODO: Dump and ONDEBUG
         list -> next[ind] = first_free_ind_data;
     }   
 
-    return 0;
+    ONDEBUG(list);
+
+    return NO_ERRORS;
  }

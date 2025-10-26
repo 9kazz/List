@@ -1,6 +1,6 @@
 digraph List {
 	rankdir = LR;
-	node [shape = Mrecord];
+	node [shape = Mrecord, style = "filled", fillcolor = "#e9e6f2ff"];
 
 	node_0 [shape = Mrecord, label = "ind = 0 | POISON | { prev = 0 | next = 0 } "];
 	node_1 [shape = Mrecord, label = "ind = 1 | 10 | { prev = 0 | next = 2 } "];
