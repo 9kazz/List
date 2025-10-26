@@ -152,3 +152,50 @@ ListErr List_Verify(ListStruct* list) {
 
     return NO_ERRORS;
  }
+
+ListErr List_Delete(ListStruct* list, size_t ind) {
+
+    ONDEBUG(list)
+
+    if (list -> head == 0 &&
+        list -> tail == 0)
+    {
+        fprintf(stderr, "Attempt to delete element from empty list\n");
+        return DELETE_EMPTY_LIST;
+    }
+
+    else if (ind == list -> tail)
+    {
+        size_t Tail = list -> tail;
+
+        list -> next[ list -> prev[Tail] ] = 0;
+
+        list -> tail = list -> prev[Tail];
+    }
+    
+    else if (ind == list -> head) 
+    {
+        size_t Head = list -> head;
+
+        list -> prev[ list -> next[Head] ] = 0;
+
+        list -> head = list -> next[Head];
+    }
+
+    else 
+    {
+        list -> next[ list -> prev[ind] ] = list -> next[ind];
+        list -> prev[ list -> next[ind] ] = list -> prev[ind];
+    }   
+
+    list -> next[ind]          = list -> free;
+    list -> prev[list -> free] = ind;
+    list -> free               = ind;
+
+    list -> data[ind] = POISON;
+    list -> prev[ind] = 0;
+
+    ONDEBUG(list);
+
+    return NO_ERRORS;    
+}

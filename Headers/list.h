@@ -25,5 +25,6 @@ ListErr    List_Dtor  (ListStruct* list);
 ListErr    List_Verify(ListStruct* list);
 
 ListErr    List_Insert(ListStruct* list, size_t ind, int value);
+ListErr    List_Delete(ListStruct* list, size_t ind);
 
 #endif

@@ -25,6 +25,7 @@ int main() {
     List_Insert(&list, 1, 20);
     List_Insert(&list, 2, 30);
     List_Insert(&list, 3, 40);
+    List_Delete(&list, 2);
 
     List_Dump_graphviz(list, output_graphviz);
 

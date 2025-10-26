@@ -11,15 +11,16 @@
 const int POISON = 0xDEADFACE;
 
 enum Errors_and_warnings {
-    NO_ERRORS        =   0,
-    MIN_CRITICAL_ERR =   1,     // Isn`t error. It`s just constant, after which follows not critical errors (warnings)
-    NULLP_TO_STRUCT  =   1,
-    NULLP_TO_DATA    =   2,
-    NULLP_TO_NEXT    =   4,
-    NULLP_TO_PREV    =   8,
-    HEAD_OUT_OF_BUF  =  16,
-    TAIL_OUT_OF_BUF  =  32,
-    FREE_OUT_OF_BUF  =  64,
+    NO_ERRORS         =     0,
+    DELETE_EMPTY_LIST =     1,   
+    MIN_CRITICAL_ERR  =    16,     // Isn`t error. It`s just constant, after which follows not critical errors (warnings)
+    NULLP_TO_STRUCT   =    16,
+    NULLP_TO_DATA     =    32,
+    NULLP_TO_NEXT     =    64,
+    NULLP_TO_PREV     =   128,
+    HEAD_OUT_OF_BUF   =   256,
+    TAIL_OUT_OF_BUF   =   512,
+    FREE_OUT_OF_BUF   =  1024,
 };
 
 #define SAFE_CALLOC(name, size_of_buf, el_type)                                     \
