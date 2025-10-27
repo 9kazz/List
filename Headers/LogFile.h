@@ -4,5 +4,6 @@
 #include <stdio.h>
 
 extern FILE* LogFile;
+extern FILE* Logfile_html;
 
 #endif

@@ -30,6 +30,8 @@ ListStruct List_Ctor(size_t size) {
         list.tail = 0;
         list.free = 1;
 
+        list.file_counter = 1;
+
     return list;
 }
 
@@ -96,9 +98,11 @@ ListErr List_Verify(ListStruct* list) {
     return Error_code;                                                                      
 }
 
- ListErr List_Insert(ListStruct* list, size_t ind, int value) {
+ int List_Insert(ListStruct* list, size_t ind, int value) {
 
     ONDEBUG(list);
+
+    List_Dump(list);
 
     size_t first_free_ind_data = list -> free;
 
@@ -150,12 +154,16 @@ ListErr List_Verify(ListStruct* list) {
 
     ONDEBUG(list);
 
-    return NO_ERRORS;
+    List_Dump(list);
+
+    return first_free_ind_data;
  }
 
 ListErr List_Delete(ListStruct* list, size_t ind) {
 
     ONDEBUG(list)
+
+    List_Dump(list);
 
     if (list -> head == 0 &&
         list -> tail == 0)
@@ -172,7 +180,7 @@ ListErr List_Delete(ListStruct* list, size_t ind) {
 
         list -> tail = list -> prev[Tail];
     }
-    
+
     else if (ind == list -> head) 
     {
         size_t Head = list -> head;
@@ -197,5 +205,7 @@ ListErr List_Delete(ListStruct* list, size_t ind) {
 
     ONDEBUG(list);
 
+    List_Dump(list);
+    
     return NO_ERRORS;    
 }

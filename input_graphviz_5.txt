@@ -1,0 +1,66 @@
+digraph List {
+	rankdir = LR;
+	node [shape = Mrecord, style = "filled", fillcolor = "#e9e6f2ff"];
+
+	node_0 [shape = Mrecord, label = "ind = 0 | POISON | { prev = 0 | next = 0 } "];
+	node_1 [shape = Mrecord, label = "ind = 1 | 10 | { prev = 0 | next = 2 } "];
+	node_2 [shape = Mrecord, label = "ind = 2 | 20 | { prev = 1 | next = 0 } "];
+	node_3 [shape = Mrecord, label = "ind = 3 | POISON | { prev = 0 | next = 4 } "];
+	node_4 [shape = Mrecord, label = "ind = 4 | POISON | { prev = 0 | next = 5 } "];
+	node_5 [shape = Mrecord, label = "ind = 5 | POISON | { prev = 0 | next = 6 } "];
+	node_6 [shape = Mrecord, label = "ind = 6 | POISON | { prev = 0 | next = 7 } "];
+	node_7 [shape = Mrecord, label = "ind = 7 | POISON | { prev = 0 | next = 8 } "];
+	node_8 [shape = Mrecord, label = "ind = 8 | POISON | { prev = 0 | next = 0 } "];
+
+	node_head [shape = Mrecord, label = "head | 1", style = "filled", fillcolor = "#FFC0C0", color = red];
+	node_tail [shape = Mrecord, label = "tail | 2", style = "filled", fillcolor = "#C0C0FF", color = blue];
+	node_free [shape = Mrecord, label = "free | 3", style = "filled", fillcolor = "#C0FFC0", color = green];
+
+	{
+	edge [color = white, weight = 1000];
+
+	node_0 -> node_1;
+	node_1 -> node_2;
+	node_2 -> node_3;
+	node_3 -> node_4;
+	node_4 -> node_5;
+	node_5 -> node_6;
+	node_6 -> node_7;
+	node_7 -> node_8;
+	}
+
+	{
+	edge [color = red, weight = 1];
+
+	node_1 -> node_2;
+	node_2 -> node_0;
+	}
+
+
+	{
+	edge [color = blue, weight = 1];
+
+	node_2 -> node_1;
+	node_1 -> node_0;
+	}
+
+
+	{
+	edge [color = green, weight = 1];
+
+	node_3 -> node_4;
+	node_4 -> node_5;
+	node_5 -> node_6;
+	node_6 -> node_7;
+	node_7 -> node_8;
+	node_8 -> node_0;
+	}
+
+
+	{
+	node_head -> node_1 [color = red];
+	node_tail -> node_2 [color = blue];
+	node_free -> node_3 [color = green];
+	}
+
+}

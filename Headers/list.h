@@ -18,13 +18,14 @@ struct ListStruct {
     size_t head;
     size_t tail;
     size_t free;
+    size_t file_counter;
 };
 
 ListStruct List_Ctor  (size_t size);
 ListErr    List_Dtor  (ListStruct* list);
 ListErr    List_Verify(ListStruct* list);
 
-ListErr    List_Insert(ListStruct* list, size_t ind, int value);
+int        List_Insert(ListStruct* list, size_t ind, int value);
 ListErr    List_Delete(ListStruct* list, size_t ind);
 
 #endif
