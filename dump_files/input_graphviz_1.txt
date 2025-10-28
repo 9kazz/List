@@ -10,7 +10,8 @@ digraph List {
 	node_5 [shape = Mrecord, label = "ind = 5 | POISON | { prev = 0 | next = 6 } "];
 	node_6 [shape = Mrecord, label = "ind = 6 | POISON | { prev = 0 | next = 7 } "];
 	node_7 [shape = Mrecord, label = "ind = 7 | POISON | { prev = 0 | next = 8 } "];
-	node_8 [shape = Mrecord, label = "ind = 8 | POISON | { prev = 0 | next = 0 } "];
+	node_8 [shape = Mrecord, label = "ind = 8 | POISON | { prev = 0 | next = 9 } "];
+	node_9 [shape = Mrecord, label = "ind = 9 | POISON | { prev = 0 | next = 0 } "];
 
 	node_head [shape = Mrecord, label = "head | 0", style = "filled", fillcolor = "#FFC0C0", color = red];
 	node_tail [shape = Mrecord, label = "tail | 0", style = "filled", fillcolor = "#C0C0FF", color = blue];
@@ -27,6 +28,7 @@ digraph List {
 	node_5 -> node_6;
 	node_6 -> node_7;
 	node_7 -> node_8;
+	node_8 -> node_9;
 	}
 
 	{
@@ -53,11 +55,14 @@ digraph List {
 	node_5 -> node_6;
 	node_6 -> node_7;
 	node_7 -> node_8;
-	node_8 -> node_0;
+	node_8 -> node_9;
+	node_9 -> node_0;
 	}
 
 
 	{
+	node_0 -> node_head [color = red];
+	node_0 -> node_tail [color = blue];
 	node_head -> node_0 [color = red];
 	node_tail -> node_0 [color = blue];
 	node_free -> node_1 [color = green];

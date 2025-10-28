@@ -7,10 +7,76 @@
 #include "utils.h"
 #include "list.h"
 
+ListErr List_Dump(ListStruct* list) {
+    assert(list);
+
+    static size_t dump_num = 1;
+
+    if(dump_num > MAX_FILE_COUNT) {
+        fprintf(stderr, "List_Dump: free files for dump are run out\n");
+        return NO_MORE_FILES;
+    }
+
+    static const size_t MAX_SIZE_FILE_NAME      =  64;
+    static const size_t MAX_DOT_CMD_LEN         = 256;
+
+    char input_graphviz_str[MAX_SIZE_FILE_NAME] = {0};
+    char image_str         [MAX_SIZE_FILE_NAME] = {0};
+    char create_image_cmd  [MAX_DOT_CMD_LEN]    = {0};
+
+//---------------------------------------------------------------------------------------------------------------
+    int snprintf_check = snprintf(input_graphviz_str, MAX_SIZE_FILE_NAME, "dump_files/input_graphviz_%d.txt", dump_num); 
+
+    if (snprintf_check < 0) {
+        fprintf(stderr, "List_dump: file name error\n");
+        return FILE_NAME_ERR;
+    }
+//---------------------------------------------------------------------------------------------------------------
+    snprintf_check = snprintf(image_str, MAX_SIZE_FILE_NAME, "dump_files/output_graphviz_%d.png", dump_num); 
+
+    if (snprintf_check < 0) {
+        fprintf(stderr, "List_dump: file name error\n");
+        return FILE_NAME_ERR;
+    }
+//---------------------------------------------------------------------------------------------------------------
+
+    SAFE_FOPEN(input_graphviz, input_graphviz_str, "w");
+
+    List_Dump_graphviz(*list, input_graphviz);
+
+    snprintf_check = snprintf(create_image_cmd, MAX_DOT_CMD_LEN, "dot dump_files/input_graphviz_%d.txt -T png -o dump_files/output_graphviz_%d.png", dump_num, dump_num); 
+
+    if (snprintf_check < 0) {
+        fprintf(stderr, "List_dump: file name error\n");
+        return FILE_NAME_ERR;
+    }
+
+    system(create_image_cmd);
+
+    List_Dump_HTML(*list, image_str, Logfile_html);
+
+    fclose(input_graphviz);
+
+    ++dump_num;
+
+    return NO_ERRORS;
+}
+
 ListErr List_Dump_graphviz(ListStruct list, FILE* output_file) {
     assert(output_file);
 
     ONDEBUG(&list)
+
+    // if (strcmp(action, "add") == 0) {
+    //     const char* color_of_change_el = "\"#C0FFC0\"";
+        
+    // } else if (strcmp(action, "delete") == 0) {
+    //     const char* color_of_change_el = "\"#FFC0C0\"";   
+
+    // } else {
+    //     fprintf(stderr, "List_Dump_graphviz: Incorrect action with list\n");
+    //     return INCOR_ACTION_DUMP;
+    // }
     
     fprintf(output_file, "digraph List {\n");
     fprintf(output_file, "\trankdir = LR;\n");
@@ -25,6 +91,9 @@ ListErr List_Dump_graphviz(ListStruct list, FILE* output_file) {
 
         else 
             fprintf(output_file, "\tnode_%d [shape = Mrecord, label = \"ind = %d | %d | { prev = %d | next = %d } \"];\n", el_ind, el_ind, list.data[el_ind], list.prev[el_ind], list.next[el_ind]);
+
+        // if (el_ind == change_el_ind)
+        //     fprintf(output_file, "\tnode_%d [fillcolor = " color_of_change_el "];\n", el_ind);
     }
 
     fprintf(output_file, "\n");
@@ -89,6 +158,9 @@ ListErr List_Dump_graphviz(ListStruct list, FILE* output_file) {
     //--------------------------------  O T H E R  --  E D G E  ---------------------------------------------
 
     fprintf(output_file, "\n\t{\n");
+
+    fprintf(output_file, "\tnode_0 -> node_head [color = red];\n");
+    fprintf(output_file, "\tnode_0 -> node_tail [color = blue];\n");
 
     fprintf(output_file, "\tnode_head -> node_%d [color = red];\n",   list.head);
     fprintf(output_file, "\tnode_tail -> node_%d [color = blue];\n",  list.tail);
@@ -155,57 +227,176 @@ ListErr List_Dump_HTML(ListStruct list, const char* image, FILE* output_file) {
     return NO_ERRORS;
 }
 
-ListErr List_Dump(ListStruct* list) {
-    assert(list);
+ListErr Unit_tests(void) {
+    ONDEBUG(list)
 
-    size_t dump_num = list -> file_counter;
+    const int SIZE_OF_LIST = 9;
 
-    if(dump_num > MAX_FILE_COUNT) {
-        fprintf(stderr, "List_Dump: free files for dump are run out\n");
-        return NO_MORE_FILES;
+    int test_result = UNIT_TEST_PASSED;
+
+    int correct_data[SIZE_OF_LIST + 1] = {0};
+    int correct_next[SIZE_OF_LIST + 1] = {0};
+    int correct_prev[SIZE_OF_LIST + 1] = {0};
+
+    ListStruct list = List_Ctor(SIZE_OF_LIST);
+
+    #define ONE_TEST_CHECK                                                                 \
+        test_result = One_test_check(list, correct_data, correct_next, correct_prev);      \
+        if (test_result == UNIT_TEST_FAILED) {                                             \
+            List_Dtor(&list);                                                              \
+            return UNIT_TEST_FAILED;                                                       \
+        }
+
+    List_Insert_after(&list, 0, 10);
+
+        correct_data[0] = -559023410;       correct_next[0] = 1;      correct_prev[0] = 1;
+		correct_data[1] =         10;       correct_next[1] = 0;      correct_prev[1] = 0;
+		correct_data[2] = -559023410;       correct_next[2] = 3;      correct_prev[2] = 0;
+		correct_data[3] = -559023410;       correct_next[3] = 4;      correct_prev[3] = 0;
+		correct_data[4] = -559023410;       correct_next[4] = 5;      correct_prev[4] = 0;
+		correct_data[5] = -559023410;       correct_next[5] = 6;      correct_prev[5] = 0;
+		correct_data[6] = -559023410;       correct_next[6] = 7;      correct_prev[6] = 0;
+		correct_data[7] = -559023410;       correct_next[7] = 8;      correct_prev[7] = 0;
+		correct_data[8] = -559023410;       correct_next[8] = 9;      correct_prev[8] = 0;
+        correct_data[9] = -559023410;       correct_next[9] = 0;      correct_prev[9] = 0;
+
+    ONE_TEST_CHECK
+
+    List_Insert_after(&list, 1, 20);
+
+        correct_data[0] = -559023410;       correct_next[0] = 1;      correct_prev[0] = 2;
+		correct_data[1] =         10;       correct_next[1] = 2;      correct_prev[1] = 0;
+		correct_data[2] =         20;       correct_next[2] = 0;      correct_prev[2] = 1;
+		correct_data[3] = -559023410;       correct_next[3] = 4;      correct_prev[3] = 0;
+		correct_data[4] = -559023410;       correct_next[4] = 5;      correct_prev[4] = 0;
+		correct_data[5] = -559023410;       correct_next[5] = 6;      correct_prev[5] = 0;
+		correct_data[6] = -559023410;       correct_next[6] = 7;      correct_prev[6] = 0;
+		correct_data[7] = -559023410;       correct_next[7] = 8;      correct_prev[7] = 0;
+		correct_data[8] = -559023410;       correct_next[8] = 9;      correct_prev[8] = 0;
+        correct_data[9] = -559023410;       correct_next[9] = 0;      correct_prev[9] = 0;
+
+    ONE_TEST_CHECK
+
+    List_Insert_after(&list, 1, 15);
+
+        correct_data[0] = -559023410;       correct_next[0] = 1;      correct_prev[0] = 2;
+		correct_data[1] =         10;       correct_next[1] = 3;      correct_prev[1] = 0;
+		correct_data[2] =         20;       correct_next[2] = 0;      correct_prev[2] = 3;
+		correct_data[3] =         15;       correct_next[3] = 2;      correct_prev[3] = 1;
+		correct_data[4] = -559023410;       correct_next[4] = 5;      correct_prev[4] = 0;
+		correct_data[5] = -559023410;       correct_next[5] = 6;      correct_prev[5] = 0;
+		correct_data[6] = -559023410;       correct_next[6] = 7;      correct_prev[6] = 0;
+		correct_data[7] = -559023410;       correct_next[7] = 8;      correct_prev[7] = 0;
+		correct_data[8] = -559023410;       correct_next[8] = 9;      correct_prev[8] = 0;
+        correct_data[9] = -559023410;       correct_next[9] = 0;      correct_prev[9] = 0;
+    
+    ONE_TEST_CHECK
+
+    List_Delete (&list, 3);
+
+        correct_data[0] = -559023410;       correct_next[0] = 1;      correct_prev[0] = 2;
+		correct_data[1] =         10;       correct_next[1] = 2;      correct_prev[1] = 0;
+		correct_data[2] =         20;       correct_next[2] = 0;      correct_prev[2] = 1;
+		correct_data[3] = -559023410;       correct_next[3] = 4;      correct_prev[3] = 0;
+		correct_data[4] = -559023410;       correct_next[4] = 5;      correct_prev[4] = 0;
+		correct_data[5] = -559023410;       correct_next[5] = 6;      correct_prev[5] = 0;
+		correct_data[6] = -559023410;       correct_next[6] = 7;      correct_prev[6] = 0;
+		correct_data[7] = -559023410;       correct_next[7] = 8;      correct_prev[7] = 0;
+		correct_data[8] = -559023410;       correct_next[8] = 9;      correct_prev[8] = 0;
+        correct_data[9] = -559023410;       correct_next[9] = 0;      correct_prev[9] = 0;
+
+    ONE_TEST_CHECK
+
+    List_Insert_before(&list, 2, 15);
+
+        correct_data[0] = -559023410;       correct_next[0] = 1;      correct_prev[0] = 2;
+		correct_data[1] =         10;       correct_next[1] = 3;      correct_prev[1] = 0;
+		correct_data[2] =         20;       correct_next[2] = 0;      correct_prev[2] = 3;
+		correct_data[3] =         15;       correct_next[3] = 2;      correct_prev[3] = 1;
+		correct_data[4] = -559023410;       correct_next[4] = 5;      correct_prev[4] = 0;
+		correct_data[5] = -559023410;       correct_next[5] = 6;      correct_prev[5] = 0;
+		correct_data[6] = -559023410;       correct_next[6] = 7;      correct_prev[6] = 0;
+		correct_data[7] = -559023410;       correct_next[7] = 8;      correct_prev[7] = 0;
+		correct_data[8] = -559023410;       correct_next[8] = 9;      correct_prev[8] = 0;
+        correct_data[9] = -559023410;       correct_next[9] = 0;      correct_prev[9] = 0;
+
+    ONE_TEST_CHECK
+
+    List_Delete(&list, 2);
+
+        correct_data[0] = -559023410;       correct_next[0] = 1;      correct_prev[0] = 3;
+		correct_data[1] =         10;       correct_next[1] = 3;      correct_prev[1] = 0;
+		correct_data[2] = -559023410;       correct_next[2] = 4;      correct_prev[2] = 0;
+		correct_data[3] =         15;       correct_next[3] = 0;      correct_prev[3] = 1;
+		correct_data[4] = -559023410;       correct_next[4] = 5;      correct_prev[4] = 0;
+		correct_data[5] = -559023410;       correct_next[5] = 6;      correct_prev[5] = 0;
+		correct_data[6] = -559023410;       correct_next[6] = 7;      correct_prev[6] = 0;
+		correct_data[7] = -559023410;       correct_next[7] = 8;      correct_prev[7] = 0;
+		correct_data[8] = -559023410;       correct_next[8] = 9;      correct_prev[8] = 0;
+        correct_data[9] = -559023410;       correct_next[9] = 0;      correct_prev[9] = 0;
+
+    ONE_TEST_CHECK
+
+    #undef ONE_TEST_CHECK
+
+    fprintf(LogFile, "Unit test passed successfully\n");
+    List_Dtor(&list);
+    return UNIT_TEST_PASSED;
+}
+
+ListErr One_test_check(ListStruct list, int* correct_data, int* correct_next, int* correct_prev) {
+    ONDEBUG(&list)
+
+    for (size_t el_ind = 0; el_ind < list.size - 1; el_ind++) {
+
+        if (list.data[el_ind] != correct_data[el_ind] || 
+            list.next[el_ind] != correct_next[el_ind] ||
+            list.prev[el_ind] != correct_prev[el_ind]  )
+        {
+            fprintf(LogFile, "Unit test is failed at index [%d]\n", el_ind);
+            
+            //---------------------------------------------------------------------
+
+            fprintf(LogFile, "data:\n");
+
+            for (size_t el_num = 0; el_num < list.size; el_num++)
+                fprintf(LogFile, "\t\t[%d]\t%d\n", el_num, list.data[el_num]);
+
+            fprintf(LogFile, "Should be:\n");
+
+            for (size_t el_num = 0; el_num < list.size; el_num++)
+                fprintf(LogFile, "\t\t[%d]\t%d\n", el_num, correct_data[el_num]);
+
+            //---------------------------------------------------------------------
+
+            fprintf(LogFile, "next:\n");
+
+            for (size_t el_num = 0; el_num < list.size; el_num++)
+                fprintf(LogFile, "\t\t[%d]\t%d\n", el_num, list.next[el_num]);
+
+            fprintf(LogFile, "Should be:\n");
+
+            for (size_t el_num = 0; el_num < list.size; el_num++)
+                fprintf(LogFile, "\t\t[%d]\t%d\n", el_num, correct_next[el_num]);
+
+            //---------------------------------------------------------------------
+
+            fprintf(LogFile, "prev:\n");
+
+            for (size_t el_num = 0; el_num < list.size; el_num++)
+                fprintf(LogFile, "\t\t[%d]\t%d\n", el_num, list.prev[el_num]);
+
+            fprintf(LogFile, "Should be:\n");
+
+            for (size_t el_num = 0; el_num < list.size; el_num++)
+                fprintf(LogFile, "\t\t[%d]\t%d\n", el_num, correct_prev[el_num]);
+
+            return UNIT_TEST_FAILED;
+        }
+
     }
 
-    static const size_t MAX_SIZE_FILE_NAME      =  32;
-    static const size_t MAX_DOT_CMD_LEN         = 256;
+    ONDEBUG(&list)
 
-    char input_graphviz_str[MAX_SIZE_FILE_NAME] = {0};
-    char image_str         [MAX_SIZE_FILE_NAME] = {0};
-    char create_image_cmd  [MAX_DOT_CMD_LEN]    = {0};
-
-//---------------------------------------------------------------------------------------------------------------
-    int snprintf_check = snprintf(input_graphviz_str, MAX_SIZE_FILE_NAME, "input_graphviz_%d.txt", dump_num); 
-
-    if (snprintf_check < 0) {
-        fprintf(stderr, "List_dump: file name error\n");
-        return FILE_NAME_ERR;
-    }
-//---------------------------------------------------------------------------------------------------------------
-    snprintf_check = snprintf(image_str, MAX_SIZE_FILE_NAME, "output_graphviz_%d.png", dump_num); 
-
-    if (snprintf_check < 0) {
-        fprintf(stderr, "List_dump: file name error\n");
-        return FILE_NAME_ERR;
-    }
-//---------------------------------------------------------------------------------------------------------------
-
-    SAFE_FOPEN(input_graphviz, input_graphviz_str, "w");
-
-    List_Dump_graphviz(*list, input_graphviz);
-
-    snprintf_check = snprintf(create_image_cmd, MAX_DOT_CMD_LEN, "dot input_graphviz_%d.txt -T png -o output_graphviz_%d.png", dump_num, dump_num); 
-
-    if (snprintf_check < 0) {
-        fprintf(stderr, "List_dump: file name error\n");
-        return FILE_NAME_ERR;
-    }
-
-    system(create_image_cmd);
-
-    List_Dump_HTML(*list, image_str, Logfile_html);
-
-    fclose(input_graphviz);
-
-    ++(list -> file_counter);
-
-    return NO_ERRORS;
+    return UNIT_TEST_PASSED;
 }

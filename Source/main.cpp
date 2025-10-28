@@ -19,20 +19,23 @@ int main() {
     assert(LogFile);
     assert(Logfile_html);
 
-    ListStruct list = List_Ctor(8);
+    // ListStruct list = List_Ctor(9);
 
-    List_Insert(&list, 0, 10);
-    List_Insert(&list, 1, 20);
-    List_Insert(&list, 2, 30);
-    List_Insert(&list, 3, 40);
-    List_Delete(&list, 2);
+    Unit_tests();
 
-    List_Dtor(&list);
+    // List_Insert_after(&list, 0, 10);
+    // List_Insert_after(&list, 1, 20);
+    // List_Insert_after(&list, 1, 15);
+    // List_Delete (&list, 3);
+    // List_Insert_before(&list, 2, 15);
+    // List_Delete(&list, 2);
 
-    /*ТОТ ЖЕ БЛОК КОДА В List_Dump ПОЧЕМУ */
+    // List_Dtor(&list);
+
+/*ТОТ ЖЕ БЛОК КОДА В List_Dump ПОЧЕМУ-ТО НЕ ИСПОЛНЯЕТСЯ, ПРИШЛОСЬ НАПИСАТЬ В main -- ЗДЕСЬ РАБОТАЕТ???*/
     char create_image_cmd[256] = {0}; 
-    for (size_t img_num = 1; img_num < list.file_counter; img_num++) {
-        snprintf(create_image_cmd, 256, "dot input_graphviz_%d.txt -T png -o output_graphviz_%d.png", img_num, img_num);
+    for (size_t img_num = 1; img_num < 12; img_num++) {
+        snprintf(create_image_cmd, 256, "dot dump_files/input_graphviz_%d.txt -T png -o dump_files/output_graphviz_%d.png", img_num, img_num);
         system(create_image_cmd);
     }
         

@@ -30,8 +30,6 @@ ListStruct List_Ctor(size_t size) {
         list.tail = 0;
         list.free = 1;
 
-        list.file_counter = 1;
-
     return list;
 }
 
@@ -98,7 +96,7 @@ ListErr List_Verify(ListStruct* list) {
     return Error_code;                                                                      
 }
 
- int List_Insert(ListStruct* list, size_t ind, int value) {
+int List_Insert_after(ListStruct* list, size_t ind, int value) {
 
     ONDEBUG(list);
 
@@ -107,57 +105,53 @@ ListErr List_Verify(ListStruct* list) {
     size_t first_free_ind_data = list -> free;
 
     list -> data[first_free_ind_data] = value;
-
     list -> free = list -> next[first_free_ind_data];
 
-    if (list -> head == 0 &&
-        list -> tail == 0)
-    {
-        list -> prev[first_free_ind_data] = 0;
-        list -> next[first_free_ind_data] = 0;
+    list -> prev[first_free_ind_data] = ind;
+    list -> next[first_free_ind_data] = list -> next[ind];
 
-        list -> head = first_free_ind_data;
-        list -> tail = first_free_ind_data;
-    }
+    list -> prev[ list -> next[ind] ] = first_free_ind_data;
 
-    else if (ind == list -> tail)
-    {
-        list -> prev[first_free_ind_data] = list -> tail;
-        list -> next[first_free_ind_data] = 0;
+    list -> next[ind] = first_free_ind_data;
 
-        list -> next[ind] = first_free_ind_data;
-
-        list -> tail = first_free_ind_data;
-    }
-
-    else if (ind == 0) 
-    {
-        list -> prev[first_free_ind_data] = 0;
-        list -> next[first_free_ind_data] = list -> head;
-
-        list -> prev[ind] = first_free_ind_data;
-
-        list -> head = first_free_ind_data;
-    }
-
-    else 
-    {
-        list -> prev[first_free_ind_data] = ind;
-        list -> next[first_free_ind_data] = list -> next[ind];
-
-        list -> prev[ list -> next[ind] ] = first_free_ind_data;
-
-        list -> next[ind] = first_free_ind_data;
-        
-        list -> next[ind] = first_free_ind_data;
-    }   
+    list -> head = list -> next[0];
+    list -> tail = list -> prev[0];
 
     ONDEBUG(list);
 
     List_Dump(list);
 
     return first_free_ind_data;
- }
+}
+
+
+int List_Insert_before(ListStruct* list, size_t ind, int value) {
+
+    ONDEBUG(list);
+
+    List_Dump(list);
+
+    size_t first_free_ind_data = list -> free;
+
+    list -> data[first_free_ind_data] = value;
+    list -> free = list -> next[first_free_ind_data];
+
+    list -> next[first_free_ind_data] = ind;
+    list -> prev[first_free_ind_data] = list -> prev[ind];
+
+    list -> next[ list -> prev[ind] ] = first_free_ind_data;
+
+    list -> prev[ind] = first_free_ind_data;
+
+    list -> head = list -> next[0];
+    list -> tail = list -> prev[0];
+
+    ONDEBUG(list);
+
+    List_Dump(list);
+
+    return first_free_ind_data;
+}
 
 ListErr List_Delete(ListStruct* list, size_t ind) {
 
@@ -165,39 +159,19 @@ ListErr List_Delete(ListStruct* list, size_t ind) {
 
     List_Dump(list);
 
-    if (list -> head == 0 &&
-        list -> tail == 0)
+    if (ind == 0)
     {
-        fprintf(stderr, "Attempt to delete element from empty list\n");
-        return DELETE_EMPTY_LIST;
+        fprintf(stderr, "Attempt to delete null-element from the list\n");
+        return DELETE_NULL_EL;
     }
 
-    else if (ind == list -> tail)
-    {
-        size_t Tail = list -> tail;
+    list -> next[ list -> prev[ind] ] = list -> next[ind];
+    list -> prev[ list -> next[ind] ] = list -> prev[ind];
 
-        list -> next[ list -> prev[Tail] ] = 0;
-
-        list -> tail = list -> prev[Tail];
-    }
-
-    else if (ind == list -> head) 
-    {
-        size_t Head = list -> head;
-
-        list -> prev[ list -> next[Head] ] = 0;
-
-        list -> head = list -> next[Head];
-    }
-
-    else 
-    {
-        list -> next[ list -> prev[ind] ] = list -> next[ind];
-        list -> prev[ list -> next[ind] ] = list -> prev[ind];
-    }   
+    list -> head = list -> next[0];
+    list -> tail = list -> prev[0];   
 
     list -> next[ind]          = list -> free;
-    list -> prev[list -> free] = ind;
     list -> free               = ind;
 
     list -> data[ind] = POISON;
