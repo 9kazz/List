@@ -28,4 +28,11 @@ int        List_Insert_after (ListStruct* list, size_t ind, int value);
 int        List_Insert_before(ListStruct* list, size_t ind, int value);
 ListErr    List_Delete       (ListStruct* list, size_t ind);
 
+size_t     get_head (ListStruct list);
+size_t     get_tail (ListStruct list);
+size_t     get_free (ListStruct list);
+int        get_data (ListStruct list, size_t ind);
+int        get_next (ListStruct list, size_t ind);
+int        get_prev (ListStruct list, size_t ind);
+
 #endif

@@ -102,20 +102,20 @@ int List_Insert_after(ListStruct* list, size_t ind, int value) {
 
     List_Dump(list);
 
-    size_t first_free_ind_data = list -> free;
+    size_t first_free_ind_data = get_free(*list);
 
     list -> data[first_free_ind_data] = value;
-    list -> free = list -> next[first_free_ind_data];
+    list -> free = get_next(*list, first_free_ind_data);
 
     list -> prev[first_free_ind_data] = ind;
-    list -> next[first_free_ind_data] = list -> next[ind];
+    list -> next[first_free_ind_data] = get_next(*list, ind);
 
     list -> prev[ list -> next[ind] ] = first_free_ind_data;
 
     list -> next[ind] = first_free_ind_data;
 
-    list -> head = list -> next[0];
-    list -> tail = list -> prev[0];
+    list -> head = get_head(*list);
+    list -> tail = get_tail(*list);
 
     ONDEBUG(list);
 
@@ -131,20 +131,20 @@ int List_Insert_before(ListStruct* list, size_t ind, int value) {
 
     List_Dump(list);
 
-    size_t first_free_ind_data = list -> free;
+    size_t first_free_ind_data = get_free(*list);
 
     list -> data[first_free_ind_data] = value;
-    list -> free = list -> next[first_free_ind_data];
+    list -> free = get_next(*list, first_free_ind_data);
 
     list -> next[first_free_ind_data] = ind;
-    list -> prev[first_free_ind_data] = list -> prev[ind];
+    list -> prev[first_free_ind_data] = get_prev(*list, ind);
 
     list -> next[ list -> prev[ind] ] = first_free_ind_data;
 
     list -> prev[ind] = first_free_ind_data;
 
-    list -> head = list -> next[0];
-    list -> tail = list -> prev[0];
+    list -> head = get_head(*list);
+    list -> tail = get_tail(*list);
 
     ONDEBUG(list);
 
@@ -165,13 +165,13 @@ ListErr List_Delete(ListStruct* list, size_t ind) {
         return DELETE_NULL_EL;
     }
 
-    list -> next[ list -> prev[ind] ] = list -> next[ind];
-    list -> prev[ list -> next[ind] ] = list -> prev[ind];
+    list -> next[ list -> prev[ind] ] = get_next(*list, ind);
+    list -> prev[ list -> next[ind] ] = get_prev(*list, ind);
 
-    list -> head = list -> next[0];
-    list -> tail = list -> prev[0];   
+    list -> head = get_head(*list);
+    list -> tail = get_tail(*list);   
 
-    list -> next[ind]          = list -> free;
+    list -> next[ind]          = get_free(*list);
     list -> free               = ind;
 
     list -> data[ind] = POISON;
@@ -182,4 +182,27 @@ ListErr List_Delete(ListStruct* list, size_t ind) {
     List_Dump(list);
     
     return NO_ERRORS;    
+}
+
+size_t get_head (ListStruct list) {
+    return list.next[0];
+}
+
+size_t get_tail (ListStruct list) {
+    return list.prev[0];
+}
+
+size_t get_free (ListStruct list) {
+    return list.free;
+}
+
+int get_data (ListStruct list, size_t ind) {
+    return list.data[ind];
+}
+
+int get_next (ListStruct list, size_t ind) {
+    return list.next[ind];
+}
+int get_prev (ListStruct list, size_t ind) {
+    return list.prev[ind];
 }

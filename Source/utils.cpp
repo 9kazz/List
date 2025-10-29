@@ -67,33 +67,34 @@ ListErr List_Dump_graphviz(ListStruct list, FILE* output_file) {
 
     ONDEBUG(&list)
 
-    // if (strcmp(action, "add") == 0) {
-    //     const char* color_of_change_el = "\"#C0FFC0\"";
-        
-    // } else if (strcmp(action, "delete") == 0) {
-    //     const char* color_of_change_el = "\"#FFC0C0\"";   
-
-    // } else {
-    //     fprintf(stderr, "List_Dump_graphviz: Incorrect action with list\n");
-    //     return INCOR_ACTION_DUMP;
-    // }
-    
     fprintf(output_file, "digraph List {\n");
     fprintf(output_file, "\trankdir = LR;\n");
     fprintf(output_file, "\tnode [shape = Mrecord, style = \"filled\", fillcolor = \"#e9e6f2ff\"];\n\n");
 
     //--------------------------------  D A T A -- N O D E S  -----------------------------------------------
 
-    for (size_t el_ind = 0; el_ind < list.size; el_ind++) 
+    fprintf(output_file, "\tnode_0 [shape = Mrecord, style = \"filled\", fillcolor = \"#ffff94ff\", color = \"#cdcd00ff\", label = \"ind = 0 | POISON | { <tail> prev = %d | <head> next = %d } \"];\n", list.prev[0], list.next[0]);
+
+    for (size_t el_ind = 1; el_ind < list.size; el_ind++) 
     {
-        if (list.data[el_ind] == POISON)
-            fprintf(output_file, "\tnode_%d [shape = Mrecord, label = \"ind = %d | POISON | { prev = %d | next = %d } \"];\n", el_ind, el_ind, list.prev[el_ind], list.next[el_ind]);
 
+        if (list.data[el_ind] == POISON && list.prev[el_ind] == 0) 
+        {
+            if (list.data[el_ind] == POISON)
+                fprintf(output_file, "\tnode_%d [shape = Mrecord, style = \"filled\", fillcolor = \"#C0FFC0\", color = green, label = \"ind = %d | POISON | { prev = %d | next = %d } \"];\n", el_ind, el_ind, list.prev[el_ind], list.next[el_ind]);
+
+            else 
+                fprintf(output_file, "\tnode_%d [shape = Mrecord, style = \"filled\", fillcolor = \"#C0FFC0\", color = green, label = \"ind = %d | %d | { prev = %d | next = %d } \"];\n", el_ind, el_ind, list.data[el_ind], list.prev[el_ind], list.next[el_ind]); 
+        } 
+        
         else 
-            fprintf(output_file, "\tnode_%d [shape = Mrecord, label = \"ind = %d | %d | { prev = %d | next = %d } \"];\n", el_ind, el_ind, list.data[el_ind], list.prev[el_ind], list.next[el_ind]);
+        {
+            if (list.data[el_ind] == POISON)
+                fprintf(output_file, "\tnode_%d [shape = Mrecord, style = \"filled\", fillcolor = \"#C0C0FF\", color = blue, label = \"ind = %d | POISON | { prev = %d | next = %d } \"];\n", el_ind, el_ind, list.prev[el_ind], list.next[el_ind]);
 
-        // if (el_ind == change_el_ind)
-        //     fprintf(output_file, "\tnode_%d [fillcolor = " color_of_change_el "];\n", el_ind);
+            else 
+                fprintf(output_file, "\tnode_%d [shape = Mrecord, style = \"filled\", fillcolor = \"#C0C0FF\", color = blue, label = \"ind = %d | %d | { prev = %d | next = %d } \"];\n", el_ind, el_ind, list.data[el_ind], list.prev[el_ind], list.next[el_ind]);    
+        }
     }
 
     fprintf(output_file, "\n");
@@ -117,7 +118,7 @@ ListErr List_Dump_graphviz(ListStruct list, FILE* output_file) {
     //--------------------------------  N E X T  --  E D G E  -----------------------------------------------
 
     fprintf(output_file, "\n\t{\n");
-    fprintf(output_file, "\tedge [color = red, weight = 1];\n\n");
+    fprintf(output_file, "\tedge [color = red, constraint = false];\n\n");
 
     for (size_t el_ind = list.head;  list.next[el_ind] != 0;  el_ind = list.next[el_ind])
         fprintf(output_file, "\tnode_%d -> node_%d;\n", el_ind, list.next[el_ind]);
@@ -130,7 +131,7 @@ ListErr List_Dump_graphviz(ListStruct list, FILE* output_file) {
     //--------------------------------  P R E V  --  E D G E  -----------------------------------------------
 
     fprintf(output_file, "\n\t{\n");
-    fprintf(output_file, "\tedge [color = blue, weight = 1];\n\n");
+    fprintf(output_file, "\tedge [color = blue, constraint = false];\n\n");
 
     for (size_t el_ind = list.tail;  list.prev[el_ind] != 0;  el_ind = list.prev[el_ind])
         fprintf(output_file, "\tnode_%d -> node_%d;\n", el_ind, list.prev[el_ind]);
@@ -142,7 +143,7 @@ ListErr List_Dump_graphviz(ListStruct list, FILE* output_file) {
     //--------------------------------  F R E E  --  E D G E  -----------------------------------------------
 
     fprintf(output_file, "\n\t{\n");
-    fprintf(output_file, "\tedge [color = green, weight = 1];\n\n");
+    fprintf(output_file, "\tedge [color = green, constraint = false];\n\n");
 
     size_t el_ind = list.free;
 
@@ -159,8 +160,8 @@ ListErr List_Dump_graphviz(ListStruct list, FILE* output_file) {
 
     fprintf(output_file, "\n\t{\n");
 
-    fprintf(output_file, "\tnode_0 -> node_head [color = red];\n");
-    fprintf(output_file, "\tnode_0 -> node_tail [color = blue];\n");
+    fprintf(output_file, "\tnode_0: <head> -> node_head [color = red];\n");
+    fprintf(output_file, "\tnode_0: <tail> -> node_tail [color = blue];\n");
 
     fprintf(output_file, "\tnode_head -> node_%d [color = red];\n",   list.head);
     fprintf(output_file, "\tnode_tail -> node_%d [color = blue];\n",  list.tail);
