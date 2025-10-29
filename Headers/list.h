@@ -35,4 +35,11 @@ int        get_data (ListStruct list, size_t ind);
 int        get_next (ListStruct list, size_t ind);
 int        get_prev (ListStruct list, size_t ind);
 
+
+#define DATA(inx)   list -> data[inx]
+
+#define NEXT(inx)   list -> next[inx]
+
+#define PREV(inx)   list -> prev[inx]
+
 #endif

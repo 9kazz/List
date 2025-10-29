@@ -49,15 +49,15 @@ enum Errors_and_warnings {
     FILE* name = temp_##name; 
 
 #ifdef DEBUG    
-    #define ONDEBUG(list)                       \
+    #define ONDEBUG(verify)                     \
         {                                       \
-        ListErr error = List_Verify(list);      \
+        ListErr error = verify(list);           \
                                                 \
         if (error >= MIN_CRITICAL_ERR)          \
             return error;                       \
         }                                   
 #else
-    #define ONDEBUG(list)
+    #define ONDEBUG(verify)
 #endif
     
     ListErr List_Dump         (ListStruct* list);

@@ -6,6 +6,7 @@
 #include "LogFile.h"
 #include "utils.h"
 #include "list.h"
+#include "graphviz.h"
 
 ListErr List_Dump(ListStruct* list) {
     assert(list);
@@ -44,7 +45,9 @@ ListErr List_Dump(ListStruct* list) {
 
     List_Dump_graphviz(*list, input_graphviz);
 
-    snprintf_check = snprintf(create_image_cmd, MAX_DOT_CMD_LEN, "dot dump_files/input_graphviz_%d.txt -T png -o dump_files/output_graphviz_%d.png", dump_num, dump_num); 
+    fclose(input_graphviz);
+
+    snprintf_check = snprintf(create_image_cmd, MAX_DOT_CMD_LEN, "dot -Tpng dump_files/input_graphviz_%d.txt -o dump_files/output_graphviz_%d.png", dump_num, dump_num); 
 
     if (snprintf_check < 0) {
         fprintf(stderr, "List_dump: file name error\n");
@@ -54,8 +57,6 @@ ListErr List_Dump(ListStruct* list) {
     system(create_image_cmd);
 
     List_Dump_HTML(*list, image_str, Logfile_html);
-
-    fclose(input_graphviz);
 
     ++dump_num;
 
@@ -69,11 +70,11 @@ ListErr List_Dump_graphviz(ListStruct list, FILE* output_file) {
 
     fprintf(output_file, "digraph List {\n");
     fprintf(output_file, "\trankdir = LR;\n");
-    fprintf(output_file, "\tnode [shape = Mrecord, style = \"filled\", fillcolor = \"#e9e6f2ff\"];\n\n");
+    fprintf(output_file, "\tnode [" SHAPE STYLE " fillcolor = " BRIGHT_RED ", color = red];\n\n");
 
     //--------------------------------  D A T A -- N O D E S  -----------------------------------------------
 
-    fprintf(output_file, "\tnode_0 [shape = Mrecord, style = \"filled\", fillcolor = \"#ffff94ff\", color = \"#cdcd00ff\", label = \"ind = 0 | POISON | { <tail> prev = %d | <head> next = %d } \"];\n", list.prev[0], list.next[0]);
+    fprintf(output_file, "\tnode_0 [" SHAPE STYLE "fillcolor = " BRIGHT_YELLOW ", color = " YELLOW ", label = \"ind = 0 | POISON | { <tail> prev = %d | <head> next = %d } \"];\n", list.prev[0], list.next[0]);
 
     for (size_t el_ind = 1; el_ind < list.size; el_ind++) 
     {
@@ -81,19 +82,19 @@ ListErr List_Dump_graphviz(ListStruct list, FILE* output_file) {
         if (list.data[el_ind] == POISON && list.prev[el_ind] == 0) 
         {
             if (list.data[el_ind] == POISON)
-                fprintf(output_file, "\tnode_%d [shape = Mrecord, style = \"filled\", fillcolor = \"#C0FFC0\", color = green, label = \"ind = %d | POISON | { prev = %d | next = %d } \"];\n", el_ind, el_ind, list.prev[el_ind], list.next[el_ind]);
+                fprintf(output_file, "\tnode_%d [" SHAPE STYLE "fillcolor = " BRIGHT_GREEN ", color = green, label = \"ind = %d | POISON | { prev = %d | next = %d } \"];\n", el_ind, el_ind, list.prev[el_ind], list.next[el_ind]);
 
             else 
-                fprintf(output_file, "\tnode_%d [shape = Mrecord, style = \"filled\", fillcolor = \"#C0FFC0\", color = green, label = \"ind = %d | %d | { prev = %d | next = %d } \"];\n", el_ind, el_ind, list.data[el_ind], list.prev[el_ind], list.next[el_ind]); 
+                fprintf(output_file, "\tnode_%d [" SHAPE STYLE "fillcolor = " BRIGHT_GREEN ", color = green, label = \"ind = %d | %d | { prev = %d | next = %d } \"];\n", el_ind, el_ind, list.data[el_ind], list.prev[el_ind], list.next[el_ind]); 
         } 
         
         else 
         {
             if (list.data[el_ind] == POISON)
-                fprintf(output_file, "\tnode_%d [shape = Mrecord, style = \"filled\", fillcolor = \"#C0C0FF\", color = blue, label = \"ind = %d | POISON | { prev = %d | next = %d } \"];\n", el_ind, el_ind, list.prev[el_ind], list.next[el_ind]);
+                fprintf(output_file, "\tnode_%d [" SHAPE STYLE "fillcolor = " BRIGHT_BLUE ", color = blue, label = \"ind = %d | POISON | { prev = %d | next = %d } \"];\n", el_ind, el_ind, list.prev[el_ind], list.next[el_ind]);
 
             else 
-                fprintf(output_file, "\tnode_%d [shape = Mrecord, style = \"filled\", fillcolor = \"#C0C0FF\", color = blue, label = \"ind = %d | %d | { prev = %d | next = %d } \"];\n", el_ind, el_ind, list.data[el_ind], list.prev[el_ind], list.next[el_ind]);    
+                fprintf(output_file, "\tnode_%d [" SHAPE STYLE "fillcolor = " BRIGHT_BLUE ", color = blue, label = \"ind = %d | %d | { prev = %d | next = %d } \"];\n", el_ind, el_ind, list.data[el_ind], list.prev[el_ind], list.next[el_ind]);    
         }
     }
 
@@ -101,9 +102,9 @@ ListErr List_Dump_graphviz(ListStruct list, FILE* output_file) {
 
     //------------------------------  O T H E R  -- N O D E S  ----------------------------------------------
 
-    fprintf(output_file, "\tnode_head [shape = Mrecord, label = \"head | %d\", style = \"filled\", fillcolor = \"#FFC0C0\", color = red];\n",   list.head);
-    fprintf(output_file, "\tnode_tail [shape = Mrecord, label = \"tail | %d\", style = \"filled\", fillcolor = \"#C0C0FF\", color = blue];\n",  list.tail);
-    fprintf(output_file, "\tnode_free [shape = Mrecord, label = \"free | %d\", style = \"filled\", fillcolor = \"#C0FFC0\", color = green];\n", list.free);
+    fprintf(output_file, "\tnode_head [" SHAPE " label = \"head | %d\"" STYLE "fillcolor = " BRIGHT_RED   " color = red];\n",   list.head);
+    fprintf(output_file, "\tnode_tail [" SHAPE " label = \"tail | %d\"" STYLE "fillcolor = " BRIGHT_BLUE  ", color = blue];\n",  list.tail);
+    fprintf(output_file, "\tnode_free [" SHAPE " label = \"free | %d\"" STYLE "fillcolor = " BRIGHT_GREEN ", color = green];\n", list.free);
 
     //--------------------------------- D A T A  --  E D G E  -----------------------------------------------
 
@@ -193,8 +194,12 @@ ListErr List_Dump_HTML(ListStruct list, const char* image, FILE* output_file) {
 
     fprintf(output_file, "<h4>\tdata </h4>\n\t{\n");
 
-    for (size_t el_ind = 0; el_ind < list.size; el_ind++)
-        fprintf(output_file, "\t\t[%d]\t%d\n", el_ind, list.data[el_ind]);
+    for (size_t el_ind = 0; el_ind < list.size; el_ind++) {
+        if (list.data[el_ind] == POISON)
+            fprintf(output_file, "\t\t[%d]\tPOISON\n", el_ind);
+        else
+            fprintf(output_file, "\t\t[%d]\t%d\n", el_ind, list.data[el_ind]);
+    }
     
     fprintf(output_file, "\t}\n");
 
@@ -248,93 +253,93 @@ ListErr Unit_tests(void) {
             return UNIT_TEST_FAILED;                                                       \
         }
 
-    List_Insert_after(&list, 0, 10);
+    List_Insert_after(&list, 0, 10); // TODO: rename to POISON
 
-        correct_data[0] = -559023410;       correct_next[0] = 1;      correct_prev[0] = 1;
+        correct_data[0] =     POISON;       correct_next[0] = 1;      correct_prev[0] = 1;
 		correct_data[1] =         10;       correct_next[1] = 0;      correct_prev[1] = 0;
-		correct_data[2] = -559023410;       correct_next[2] = 3;      correct_prev[2] = 0;
-		correct_data[3] = -559023410;       correct_next[3] = 4;      correct_prev[3] = 0;
-		correct_data[4] = -559023410;       correct_next[4] = 5;      correct_prev[4] = 0;
-		correct_data[5] = -559023410;       correct_next[5] = 6;      correct_prev[5] = 0;
-		correct_data[6] = -559023410;       correct_next[6] = 7;      correct_prev[6] = 0;
-		correct_data[7] = -559023410;       correct_next[7] = 8;      correct_prev[7] = 0;
-		correct_data[8] = -559023410;       correct_next[8] = 9;      correct_prev[8] = 0;
-        correct_data[9] = -559023410;       correct_next[9] = 0;      correct_prev[9] = 0;
+		correct_data[2] =     POISON;       correct_next[2] = 3;      correct_prev[2] = 0;
+		correct_data[3] =     POISON;       correct_next[3] = 4;      correct_prev[3] = 0;
+		correct_data[4] =     POISON;       correct_next[4] = 5;      correct_prev[4] = 0;
+		correct_data[5] =     POISON;       correct_next[5] = 6;      correct_prev[5] = 0;
+		correct_data[6] =     POISON;       correct_next[6] = 7;      correct_prev[6] = 0;
+		correct_data[7] =     POISON;       correct_next[7] = 8;      correct_prev[7] = 0;
+		correct_data[8] =     POISON;       correct_next[8] = 9;      correct_prev[8] = 0;
+        correct_data[9] =     POISON;       correct_next[9] = 0;      correct_prev[9] = 0;
 
     ONE_TEST_CHECK
 
     List_Insert_after(&list, 1, 20);
 
-        correct_data[0] = -559023410;       correct_next[0] = 1;      correct_prev[0] = 2;
+        correct_data[0] =     POISON;       correct_next[0] = 1;      correct_prev[0] = 2;
 		correct_data[1] =         10;       correct_next[1] = 2;      correct_prev[1] = 0;
 		correct_data[2] =         20;       correct_next[2] = 0;      correct_prev[2] = 1;
-		correct_data[3] = -559023410;       correct_next[3] = 4;      correct_prev[3] = 0;
-		correct_data[4] = -559023410;       correct_next[4] = 5;      correct_prev[4] = 0;
-		correct_data[5] = -559023410;       correct_next[5] = 6;      correct_prev[5] = 0;
-		correct_data[6] = -559023410;       correct_next[6] = 7;      correct_prev[6] = 0;
-		correct_data[7] = -559023410;       correct_next[7] = 8;      correct_prev[7] = 0;
-		correct_data[8] = -559023410;       correct_next[8] = 9;      correct_prev[8] = 0;
-        correct_data[9] = -559023410;       correct_next[9] = 0;      correct_prev[9] = 0;
+		correct_data[3] =     POISON;       correct_next[3] = 4;      correct_prev[3] = 0;
+		correct_data[4] =     POISON;       correct_next[4] = 5;      correct_prev[4] = 0;
+		correct_data[5] =     POISON;       correct_next[5] = 6;      correct_prev[5] = 0;
+		correct_data[6] =     POISON;       correct_next[6] = 7;      correct_prev[6] = 0;
+		correct_data[7] =     POISON;       correct_next[7] = 8;      correct_prev[7] = 0;
+		correct_data[8] =     POISON;       correct_next[8] = 9;      correct_prev[8] = 0;
+        correct_data[9] =     POISON;       correct_next[9] = 0;      correct_prev[9] = 0;
 
     ONE_TEST_CHECK
 
     List_Insert_after(&list, 1, 15);
 
-        correct_data[0] = -559023410;       correct_next[0] = 1;      correct_prev[0] = 2;
+        correct_data[0] =     POISON;       correct_next[0] = 1;      correct_prev[0] = 2;
 		correct_data[1] =         10;       correct_next[1] = 3;      correct_prev[1] = 0;
 		correct_data[2] =         20;       correct_next[2] = 0;      correct_prev[2] = 3;
 		correct_data[3] =         15;       correct_next[3] = 2;      correct_prev[3] = 1;
-		correct_data[4] = -559023410;       correct_next[4] = 5;      correct_prev[4] = 0;
-		correct_data[5] = -559023410;       correct_next[5] = 6;      correct_prev[5] = 0;
-		correct_data[6] = -559023410;       correct_next[6] = 7;      correct_prev[6] = 0;
-		correct_data[7] = -559023410;       correct_next[7] = 8;      correct_prev[7] = 0;
-		correct_data[8] = -559023410;       correct_next[8] = 9;      correct_prev[8] = 0;
-        correct_data[9] = -559023410;       correct_next[9] = 0;      correct_prev[9] = 0;
+		correct_data[4] =     POISON;       correct_next[4] = 5;      correct_prev[4] = 0;
+		correct_data[5] =     POISON;       correct_next[5] = 6;      correct_prev[5] = 0;
+		correct_data[6] =     POISON;       correct_next[6] = 7;      correct_prev[6] = 0;
+		correct_data[7] =     POISON;       correct_next[7] = 8;      correct_prev[7] = 0;
+		correct_data[8] =     POISON;       correct_next[8] = 9;      correct_prev[8] = 0;
+        correct_data[9] =     POISON;       correct_next[9] = 0;      correct_prev[9] = 0;
     
     ONE_TEST_CHECK
 
     List_Delete (&list, 3);
 
-        correct_data[0] = -559023410;       correct_next[0] = 1;      correct_prev[0] = 2;
+        correct_data[0] =     POISON;       correct_next[0] = 1;      correct_prev[0] = 2;
 		correct_data[1] =         10;       correct_next[1] = 2;      correct_prev[1] = 0;
 		correct_data[2] =         20;       correct_next[2] = 0;      correct_prev[2] = 1;
-		correct_data[3] = -559023410;       correct_next[3] = 4;      correct_prev[3] = 0;
-		correct_data[4] = -559023410;       correct_next[4] = 5;      correct_prev[4] = 0;
-		correct_data[5] = -559023410;       correct_next[5] = 6;      correct_prev[5] = 0;
-		correct_data[6] = -559023410;       correct_next[6] = 7;      correct_prev[6] = 0;
-		correct_data[7] = -559023410;       correct_next[7] = 8;      correct_prev[7] = 0;
-		correct_data[8] = -559023410;       correct_next[8] = 9;      correct_prev[8] = 0;
-        correct_data[9] = -559023410;       correct_next[9] = 0;      correct_prev[9] = 0;
+		correct_data[3] =     POISON;       correct_next[3] = 4;      correct_prev[3] = 0;
+		correct_data[4] =     POISON;       correct_next[4] = 5;      correct_prev[4] = 0;
+		correct_data[5] =     POISON;       correct_next[5] = 6;      correct_prev[5] = 0;
+		correct_data[6] =     POISON;       correct_next[6] = 7;      correct_prev[6] = 0;
+		correct_data[7] =     POISON;       correct_next[7] = 8;      correct_prev[7] = 0;
+		correct_data[8] =     POISON;       correct_next[8] = 9;      correct_prev[8] = 0;
+        correct_data[9] =     POISON;       correct_next[9] = 0;      correct_prev[9] = 0;
 
     ONE_TEST_CHECK
 
     List_Insert_before(&list, 2, 15);
 
-        correct_data[0] = -559023410;       correct_next[0] = 1;      correct_prev[0] = 2;
+        correct_data[0] =     POISON;       correct_next[0] = 1;      correct_prev[0] = 2;
 		correct_data[1] =         10;       correct_next[1] = 3;      correct_prev[1] = 0;
 		correct_data[2] =         20;       correct_next[2] = 0;      correct_prev[2] = 3;
 		correct_data[3] =         15;       correct_next[3] = 2;      correct_prev[3] = 1;
-		correct_data[4] = -559023410;       correct_next[4] = 5;      correct_prev[4] = 0;
-		correct_data[5] = -559023410;       correct_next[5] = 6;      correct_prev[5] = 0;
-		correct_data[6] = -559023410;       correct_next[6] = 7;      correct_prev[6] = 0;
-		correct_data[7] = -559023410;       correct_next[7] = 8;      correct_prev[7] = 0;
-		correct_data[8] = -559023410;       correct_next[8] = 9;      correct_prev[8] = 0;
-        correct_data[9] = -559023410;       correct_next[9] = 0;      correct_prev[9] = 0;
+		correct_data[4] =     POISON;       correct_next[4] = 5;      correct_prev[4] = 0;
+		correct_data[5] =     POISON;       correct_next[5] = 6;      correct_prev[5] = 0;
+		correct_data[6] =     POISON;       correct_next[6] = 7;      correct_prev[6] = 0;
+		correct_data[7] =     POISON;       correct_next[7] = 8;      correct_prev[7] = 0;
+		correct_data[8] =     POISON;       correct_next[8] = 9;      correct_prev[8] = 0;
+        correct_data[9] =     POISON;       correct_next[9] = 0;      correct_prev[9] = 0;
 
     ONE_TEST_CHECK
 
     List_Delete(&list, 2);
 
-        correct_data[0] = -559023410;       correct_next[0] = 1;      correct_prev[0] = 3;
+        correct_data[0] =     POISON;       correct_next[0] = 1;      correct_prev[0] = 3;
 		correct_data[1] =         10;       correct_next[1] = 3;      correct_prev[1] = 0;
-		correct_data[2] = -559023410;       correct_next[2] = 4;      correct_prev[2] = 0;
+		correct_data[2] =     POISON;       correct_next[2] = 4;      correct_prev[2] = 0;
 		correct_data[3] =         15;       correct_next[3] = 0;      correct_prev[3] = 1;
-		correct_data[4] = -559023410;       correct_next[4] = 5;      correct_prev[4] = 0;
-		correct_data[5] = -559023410;       correct_next[5] = 6;      correct_prev[5] = 0;
-		correct_data[6] = -559023410;       correct_next[6] = 7;      correct_prev[6] = 0;
-		correct_data[7] = -559023410;       correct_next[7] = 8;      correct_prev[7] = 0;
-		correct_data[8] = -559023410;       correct_next[8] = 9;      correct_prev[8] = 0;
-        correct_data[9] = -559023410;       correct_next[9] = 0;      correct_prev[9] = 0;
+		correct_data[4] =     POISON;       correct_next[4] = 5;      correct_prev[4] = 0;
+		correct_data[5] =     POISON;       correct_next[5] = 6;      correct_prev[5] = 0;
+		correct_data[6] =     POISON;       correct_next[6] = 7;      correct_prev[6] = 0;
+		correct_data[7] =     POISON;       correct_next[7] = 8;      correct_prev[7] = 0;
+		correct_data[8] =     POISON;       correct_next[8] = 9;      correct_prev[8] = 0;
+        correct_data[9] =     POISON;       correct_next[9] = 0;      correct_prev[9] = 0;
 
     ONE_TEST_CHECK
 
