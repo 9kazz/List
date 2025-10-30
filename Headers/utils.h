@@ -31,6 +31,7 @@ enum Errors_and_warnings {
     HEAD_OUT_OF_BUF   =   2048,
     TAIL_OUT_OF_BUF   =   4096,
     FREE_OUT_OF_BUF   =   8192,
+    REALLOC_ERR       =  16384
 };
 
 #define SAFE_CALLOC(name, size_of_buf, el_type)                                     \

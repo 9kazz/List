@@ -142,21 +142,22 @@ ListErr List_Dump_graphviz(ListStruct list, FILE* output_file) {
     fprintf(output_file, "\t}\n\n");
 
     //--------------------------------  F R E E  --  E D G E  -----------------------------------------------
+    if (get_free(list) != 0) 
+    {
+        fprintf(output_file, "\n\t{\n");
+        fprintf(output_file, "\tedge [color = green, constraint = false];\n\n");
 
-    fprintf(output_file, "\n\t{\n");
-    fprintf(output_file, "\tedge [color = green, constraint = false];\n\n");
+        size_t el_ind = list.free;
 
-    size_t el_ind = list.free;
+        while (list.next[el_ind] != 0) {
+            fprintf(output_file, "\tnode_%d -> node_%d;\n", el_ind, list.next[el_ind]);
+            el_ind = list.next[el_ind];
+        }
 
-    while (list.next[el_ind] != 0) {
-        fprintf(output_file, "\tnode_%d -> node_%d;\n", el_ind, list.next[el_ind]);
-        el_ind = list.next[el_ind];
+        fprintf(output_file, "\tnode_%d -> node_0;\n", el_ind);
+
+        fprintf(output_file, "\t}\n\n");
     }
-
-    fprintf(output_file, "\tnode_%d -> node_0;\n", el_ind);
-
-    fprintf(output_file, "\t}\n\n");
-
     //--------------------------------  O T H E R  --  E D G E  ---------------------------------------------
 
     fprintf(output_file, "\n\t{\n");
@@ -245,6 +246,7 @@ ListErr Unit_tests(void) {
     int correct_prev[SIZE_OF_LIST + 1] = {0};
 
     ListStruct list = List_Ctor(SIZE_OF_LIST);
+    ListStruct* pointer_list = &list;
 
     #define ONE_TEST_CHECK                                                                 \
         test_result = One_test_check(list, correct_data, correct_next, correct_prev);      \
@@ -253,7 +255,7 @@ ListErr Unit_tests(void) {
             return UNIT_TEST_FAILED;                                                       \
         }
 
-    List_Insert_after(&list, 0, 10); // TODO: rename to POISON
+    List_Insert_after(&list, 0, 10); 
 
         correct_data[0] =     POISON;       correct_next[0] = 1;      correct_prev[0] = 1;
 		correct_data[1] =         10;       correct_next[1] = 0;      correct_prev[1] = 0;
@@ -342,6 +344,16 @@ ListErr Unit_tests(void) {
         correct_data[9] =     POISON;       correct_next[9] = 0;      correct_prev[9] = 0;
 
     ONE_TEST_CHECK
+
+    List_Insert_after(&list, 1, 1);
+    List_Insert_after(&list, 1, 3);
+    List_Insert_after(&list, 1, 4);
+    List_Insert_after(&list, 1, 5);
+    List_Insert_after(&list, 1, 6);
+    List_Insert_after(&list, 1, 7);
+    List_Insert_after(&list, 1, 8);
+
+    pointer_list = List_Realloc(&list);
 
     #undef ONE_TEST_CHECK
 

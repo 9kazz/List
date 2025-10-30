@@ -26,7 +26,10 @@ ListErr    List_Verify(ListStruct* list);
 
 int        List_Insert_after (ListStruct* list, size_t ind, int value);
 int        List_Insert_before(ListStruct* list, size_t ind, int value);
+int        List_Insert_Head  (ListStruct* list, int value);
+int        List_Insert_Tail  (ListStruct* list, int value);
 ListErr    List_Delete       (ListStruct* list, size_t ind);
+ListStruct*    List_Realloc      (ListStruct* list);
 
 size_t     get_head (ListStruct list);
 size_t     get_tail (ListStruct list);
