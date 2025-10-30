@@ -100,7 +100,8 @@ int List_Insert_after(ListStruct* list, size_t ind, int value) {
 
     ONDEBUG(List_Verify)
 
-    List_Dump(list);
+    static char dump_info_str[MAX_DUMP_INFO_LEN] = {0};
+    LIST_DUMP(list, dump_info_str, "before")
 
     size_t first_free_ind_data = get_free(*list);
 
@@ -119,7 +120,7 @@ int List_Insert_after(ListStruct* list, size_t ind, int value) {
 
     ONDEBUG(List_Verify)
 
-    List_Dump(list);
+    LIST_DUMP(list, dump_info_str, "after")
 
     return first_free_ind_data;
 }
@@ -129,7 +130,8 @@ int List_Insert_before(ListStruct* list, size_t ind, int value) {
 
     ONDEBUG(List_Verify)
 
-    List_Dump(list);
+    static char dump_info_str[MAX_DUMP_INFO_LEN] = {0};
+    LIST_DUMP(list, dump_info_str, "before")
 
     size_t first_free_ind_data = get_free(*list);
 
@@ -148,16 +150,17 @@ int List_Insert_before(ListStruct* list, size_t ind, int value) {
 
     ONDEBUG(List_Verify)
 
-    List_Dump(list);
+    LIST_DUMP(list, dump_info_str, "after")
 
     return first_free_ind_data;
 }
 
 ListErr List_Delete(ListStruct* list, size_t ind) {
 
-    ONDEBUG(list)
+    ONDEBUG(List_Verify)
 
-    List_Dump(list);
+    static char dump_info_str[MAX_DUMP_INFO_LEN] = {0};
+    LIST_DUMP(list, dump_info_str, "before")
 
     if (ind == 0)
     {
@@ -179,7 +182,7 @@ ListErr List_Delete(ListStruct* list, size_t ind) {
 
     ONDEBUG(List_Verify)
 
-    List_Dump(list);
+    LIST_DUMP(list, dump_info_str, "after")
     
     return NO_ERRORS;    
 }

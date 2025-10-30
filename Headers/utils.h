@@ -8,8 +8,9 @@
 
 #include "list.h"
 
-const int POISON = 0xDEADFACE;
-const int MAX_FILE_COUNT = 32;
+const int POISON            = 0xDEADFACE;
+const int MAX_FILE_COUNT    = 32;
+const int MAX_DUMP_INFO_LEN = 128;
 
 enum Successful_ending {
     UNIT_TEST_PASSED = 0
@@ -59,10 +60,14 @@ enum Errors_and_warnings {
 #else
     #define ONDEBUG(verify)
 #endif
+
+#define LIST_DUMP(list, dump_info_str, param)                                                                                                           \
+    snprintf(dump_info_str, MAX_DUMP_INFO_LEN, "%s <span style = \"color: blue;\"> %s </span> in %s:%d", param, __func__, __FILE__, __LINE__);          \
+    List_Dump(list, dump_info_str); 
     
-    ListErr List_Dump         (ListStruct* list);
+    ListErr List_Dump         (ListStruct* list, const char* dump_info);
     ListErr List_Dump_graphviz(ListStruct  list, FILE* output_file);
-    ListErr List_Dump_HTML    (ListStruct  list, const char* image, FILE* output_file);
+    ListErr List_Dump_HTML    (ListStruct  list, const char* image, const char* dump_info, FILE* output_file);
 
     ListErr One_test_check    (ListStruct list, int* correct_data, int* correct_next, int* correct_prev);
     ListErr Unit_tests        (void);

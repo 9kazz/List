@@ -8,7 +8,7 @@
 #include "list.h"
 #include "graphviz.h"
 
-ListErr List_Dump(ListStruct* list) {
+ListErr List_Dump(ListStruct* list, const char* dump_info) {
     assert(list);
 
     static size_t dump_num = 1;
@@ -56,7 +56,7 @@ ListErr List_Dump(ListStruct* list) {
 
     system(create_image_cmd);
 
-    List_Dump_HTML(*list, image_str, Logfile_html);
+    List_Dump_HTML(*list, image_str, dump_info, Logfile_html);
 
     ++dump_num;
 
@@ -177,13 +177,13 @@ ListErr List_Dump_graphviz(ListStruct list, FILE* output_file) {
     return NO_ERRORS;
 }
 
-ListErr List_Dump_HTML(ListStruct list, const char* image, FILE* output_file) {
+ListErr List_Dump_HTML(ListStruct list, const char* image, const char* dump_info, FILE* output_file) {
     assert(output_file);
 
     ONDEBUG(&list)
 
     fprintf(output_file, "<pre>\n");
-    fprintf(output_file, "\t<h2> Dump of list: </h2>\n");
+    fprintf(output_file, "\t<h2> Dump of list (%s): </h2>\n", dump_info);
 
     fprintf(output_file, "<h4>\tsize: %d\n", list.size);
     fprintf(output_file, "\thead: %d\n", list.head);
