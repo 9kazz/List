@@ -2,7 +2,9 @@
     "files.associations": {
         "list": "cpp",
         "typeinfo": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "array": "cpp",
+        "string": "cpp"
     },
     "cSpell.words": [
         "ONDEBUG",

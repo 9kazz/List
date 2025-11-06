@@ -1,31 +1,22 @@
 digraph List {
 	rankdir = LR;
-	node [shape = Mrecord, style = "filled",  fillcolor = "#FFC0C0", color = red];
+	node [shape = Mrecord, style = "filled",  fillcolor = red, color = red];
 
 	node_0 [shape = Mrecord, style = "filled", fillcolor = "#ffff94ff", color = "#cdcd00ff", label = "ind = 0 | POISON | { <tail> prev = 3 | <head> next = 1 } "];
 	node_1 [shape = Mrecord, style = "filled", fillcolor = "#C0C0FF", color = blue, label = "ind = 1 | 10 | { prev = 0 | next = 9 } "];
-	node_2 [shape = Mrecord, style = "filled", fillcolor = "#C0C0FF", color = blue, label = "ind = 2 | 1 | { prev = 4 | next = 3 } "];
-	node_3 [shape = Mrecord, style = "filled", fillcolor = "#C0C0FF", color = blue, label = "ind = 3 | 15 | { prev = 2 | next = 0 } "];
-	node_4 [shape = Mrecord, style = "filled", fillcolor = "#C0C0FF", color = blue, label = "ind = 4 | 3 | { prev = 5 | next = 2 } "];
-	node_5 [shape = Mrecord, style = "filled", fillcolor = "#C0C0FF", color = blue, label = "ind = 5 | 4 | { prev = 6 | next = 4 } "];
-	node_6 [shape = Mrecord, style = "filled", fillcolor = "#C0C0FF", color = blue, label = "ind = 6 | 5 | { prev = 7 | next = 5 } "];
-	node_7 [shape = Mrecord, style = "filled", fillcolor = "#C0C0FF", color = blue, label = "ind = 7 | 6 | { prev = 8 | next = 6 } "];
-	node_8 [shape = Mrecord, style = "filled", fillcolor = "#C0C0FF", color = blue, label = "ind = 8 | 7 | { prev = 9 | next = 7 } "];
-	node_9 [shape = Mrecord, style = "filled", fillcolor = "#C0C0FF", color = blue, label = "ind = 9 | 8 | { prev = 1 | next = 8 } "];
-	node_10 [shape = Mrecord, style = "filled", fillcolor = "#C0FFC0", color = green, label = "ind = 10 | POISON | { prev = 0 | next = 11 } "];
-	node_11 [shape = Mrecord, style = "filled", fillcolor = "#C0FFC0", color = green, label = "ind = 11 | POISON | { prev = 0 | next = 12 } "];
-	node_12 [shape = Mrecord, style = "filled", fillcolor = "#C0FFC0", color = green, label = "ind = 12 | POISON | { prev = 0 | next = 13 } "];
-	node_13 [shape = Mrecord, style = "filled", fillcolor = "#C0FFC0", color = green, label = "ind = 13 | POISON | { prev = 0 | next = 14 } "];
-	node_14 [shape = Mrecord, style = "filled", fillcolor = "#C0FFC0", color = green, label = "ind = 14 | POISON | { prev = 0 | next = 15 } "];
-	node_15 [shape = Mrecord, style = "filled", fillcolor = "#C0FFC0", color = green, label = "ind = 15 | POISON | { prev = 0 | next = 16 } "];
-	node_16 [shape = Mrecord, style = "filled", fillcolor = "#C0FFC0", color = green, label = "ind = 16 | POISON | { prev = 0 | next = 17 } "];
-	node_17 [shape = Mrecord, style = "filled", fillcolor = "#C0FFC0", color = green, label = "ind = 17 | POISON | { prev = 0 | next = 18 } "];
-	node_18 [shape = Mrecord, style = "filled", fillcolor = "#C0FFC0", color = green, label = "ind = 18 | POISON | { prev = 0 | next = 19 } "];
-	node_19 [shape = Mrecord, style = "filled", fillcolor = "#C0FFC0", color = green, label = "ind = 19 | POISON | { prev = 0 | next = 0 } "];
+	node_2 [shape = Mrecord, style = "filled", fillcolor = "#C0C0FF", color = blue, label = "ind = 2 | 8 | { prev = 1 | next = 8 } "];
+	node_3 [shape = Mrecord, style = "filled", fillcolor = "#C0C0FF", color = blue, label = "ind = 3 | 7 | { prev = 9 | next = 7 } "];
+	node_4 [shape = Mrecord, style = "filled", fillcolor = "#C0C0FF", color = blue, label = "ind = 4 | 6 | { prev = 8 | next = 6 } "];
+	node_5 [shape = Mrecord, style = "filled", fillcolor = "#C0C0FF", color = blue, label = "ind = 5 | 5 | { prev = 7 | next = 5 } "];
+	node_6 [shape = Mrecord, style = "filled", fillcolor = "#C0C0FF", color = blue, label = "ind = 6 | 4 | { prev = 6 | next = 4 } "];
+	node_7 [shape = Mrecord, style = "filled", fillcolor = "#C0C0FF", color = blue, label = "ind = 7 | 3 | { prev = 5 | next = 2 } "];
+	node_8 [shape = Mrecord, style = "filled", fillcolor = "#C0C0FF", color = blue, label = "ind = 8 | 1 | { prev = 4 | next = 3 } "];
+	node_9 [shape = Mrecord, style = "filled", fillcolor = "#C0FFC0", color = green, label = "ind = 9 | POISON | { prev = 0 | next = 10 } "];
+	node_10 [shape = Mrecord, style = "filled", fillcolor = "#C0FFC0", color = green, label = "ind = 10 | POISON | { prev = 0 | next = 0 } "];
 
 	node_head [shape = Mrecord,  label = "head | 1"style = "filled", fillcolor = "#FFC0C0" color = red];
 	node_tail [shape = Mrecord,  label = "tail | 3"style = "filled", fillcolor = "#C0C0FF", color = blue];
-	node_free [shape = Mrecord,  label = "free | 10"style = "filled", fillcolor = "#C0FFC0", color = green];
+	node_free [shape = Mrecord,  label = "free | 1"style = "filled", fillcolor = "#C0FFC0", color = green];
 
 	{
 	edge [color = white, weight = 1000];
@@ -40,69 +31,28 @@ digraph List {
 	node_7 -> node_8;
 	node_8 -> node_9;
 	node_9 -> node_10;
-	node_10 -> node_11;
-	node_11 -> node_12;
-	node_12 -> node_13;
-	node_13 -> node_14;
-	node_14 -> node_15;
-	node_15 -> node_16;
-	node_16 -> node_17;
-	node_17 -> node_18;
-	node_18 -> node_19;
 	}
 
 	{
-	edge [color = red, constraint = false];
+	edge [color = black, constraint = false, dir = both, style = bold];
 
-	node_1 -> node_9;
-	node_9 -> node_8;
-	node_8 -> node_7;
-	node_7 -> node_6;
-	node_6 -> node_5;
-	node_5 -> node_4;
-	node_4 -> node_2;
-	node_2 -> node_3;
-	node_3 -> node_0;
-	}
-
-
-	{
-	edge [color = blue, constraint = false];
-
-	node_3 -> node_2;
-	node_2 -> node_4;
-	node_4 -> node_5;
-	node_5 -> node_6;
-	node_6 -> node_7;
-	node_7 -> node_8;
-	node_8 -> node_9;
-	node_9 -> node_1;
-	node_1 -> node_0;
+	node_0 -> node_1;
 	}
 
 
 	{
 	edge [color = green, constraint = false];
 
-	node_10 -> node_11;
-	node_11 -> node_12;
-	node_12 -> node_13;
-	node_13 -> node_14;
-	node_14 -> node_15;
-	node_15 -> node_16;
-	node_16 -> node_17;
-	node_17 -> node_18;
-	node_18 -> node_19;
-	node_19 -> node_0;
+	node_1 -> node_9;
+	node_9 -> node_10;
+	node_10 -> node_0;
 	}
 
 
 	{
-	node_0: <head> -> node_head [color = red];
-	node_0: <tail> -> node_tail [color = blue];
 	node_head -> node_1 [color = red];
 	node_tail -> node_3 [color = blue];
-	node_free -> node_10 [color = green];
+	node_free -> node_1 [color = green];
 	}
 
 }

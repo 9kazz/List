@@ -43,7 +43,7 @@ ListErr List_Dump(ListStruct* list, const char* dump_info) {
 
     SAFE_FOPEN(input_graphviz, input_graphviz_str, "w");
 
-    List_Dump_graphviz(*list, input_graphviz);
+    List_Dump_graphviz(list, input_graphviz);
 
     fclose(input_graphviz);
 
@@ -56,45 +56,43 @@ ListErr List_Dump(ListStruct* list, const char* dump_info) {
 
     system(create_image_cmd);
 
-    List_Dump_HTML(*list, image_str, dump_info, Logfile_html);
+    List_Dump_HTML(list, image_str, dump_info, Logfile_html);
 
     ++dump_num;
 
     return NO_ERRORS;
 }
 
-ListErr List_Dump_graphviz(ListStruct list, FILE* output_file) {
+ListErr List_Dump_graphviz(ListStruct* list, FILE* output_file) {
     assert(output_file);
-
-    ONDEBUG(&list)
 
     fprintf(output_file, "digraph List {\n");
     fprintf(output_file, "\trankdir = LR;\n");
-    fprintf(output_file, "\tnode [" SHAPE STYLE " fillcolor = " BRIGHT_RED ", color = red];\n\n");
+    fprintf(output_file, "\tnode [" SHAPE STYLE " fillcolor = red, color = red];\n\n");
 
     //--------------------------------  D A T A -- N O D E S  -----------------------------------------------
 
-    fprintf(output_file, "\tnode_0 [" SHAPE STYLE "fillcolor = " BRIGHT_YELLOW ", color = " YELLOW ", label = \"ind = 0 | POISON | { <tail> prev = %d | <head> next = %d } \"];\n", list.prev[0], list.next[0]);
+    fprintf(output_file, "\tnode_0 [" SHAPE STYLE "fillcolor = " BRIGHT_YELLOW ", color = " YELLOW ", label = \"ind = 0 | POISON | { <tail> prev = %d | <head> next = %d } \"];\n", list->prev[0], list->next[0]);
 
-    for (size_t el_ind = 1; el_ind < list.size; el_ind++) 
+    for (size_t el_ind = 1; el_ind < list->size; el_ind++) 
     {
 
-        if (list.data[el_ind] == POISON && list.prev[el_ind] == 0) 
+        if (list->data[el_ind] == POISON && list->prev[el_ind] == 0) 
         {
-            if (list.data[el_ind] == POISON)
-                fprintf(output_file, "\tnode_%d [" SHAPE STYLE "fillcolor = " BRIGHT_GREEN ", color = green, label = \"ind = %d | POISON | { prev = %d | next = %d } \"];\n", el_ind, el_ind, list.prev[el_ind], list.next[el_ind]);
+            if (list->data[el_ind] == POISON)
+                fprintf(output_file, "\tnode_%d [" SHAPE STYLE "fillcolor = " BRIGHT_GREEN ", color = green, label = \"ind = %d | POISON | { prev = %d | next = %d } \"];\n", el_ind, el_ind, list->prev[el_ind], list->next[el_ind]);
 
             else 
-                fprintf(output_file, "\tnode_%d [" SHAPE STYLE "fillcolor = " BRIGHT_GREEN ", color = green, label = \"ind = %d | %d | { prev = %d | next = %d } \"];\n", el_ind, el_ind, list.data[el_ind], list.prev[el_ind], list.next[el_ind]); 
+                fprintf(output_file, "\tnode_%d [" SHAPE STYLE "fillcolor = " BRIGHT_GREEN ", color = green, label = \"ind = %d | %d | { prev = %d | next = %d } \"];\n", el_ind, el_ind, list->data[el_ind], list->prev[el_ind], list->next[el_ind]); 
         } 
         
         else 
         {
-            if (list.data[el_ind] == POISON)
-                fprintf(output_file, "\tnode_%d [" SHAPE STYLE "fillcolor = " BRIGHT_BLUE ", color = blue, label = \"ind = %d | POISON | { prev = %d | next = %d } \"];\n", el_ind, el_ind, list.prev[el_ind], list.next[el_ind]);
+            if (list->data[el_ind] == POISON)
+                fprintf(output_file, "\tnode_%d [" SHAPE STYLE "fillcolor = " BRIGHT_BLUE ", color = blue, label = \"ind = %d | POISON | { prev = %d | next = %d } \"];\n", el_ind, el_ind, list->prev[el_ind], list->next[el_ind]);
 
             else 
-                fprintf(output_file, "\tnode_%d [" SHAPE STYLE "fillcolor = " BRIGHT_BLUE ", color = blue, label = \"ind = %d | %d | { prev = %d | next = %d } \"];\n", el_ind, el_ind, list.data[el_ind], list.prev[el_ind], list.next[el_ind]);    
+                fprintf(output_file, "\tnode_%d [" SHAPE STYLE "fillcolor = " BRIGHT_BLUE ", color = blue, label = \"ind = %d | %d | { prev = %d | next = %d } \"];\n", el_ind, el_ind, list->data[el_ind], list->prev[el_ind], list->next[el_ind]);    
         }
     }
 
@@ -102,42 +100,41 @@ ListErr List_Dump_graphviz(ListStruct list, FILE* output_file) {
 
     //------------------------------  O T H E R  -- N O D E S  ----------------------------------------------
 
-    fprintf(output_file, "\tnode_head [" SHAPE " label = \"head | %d\"" STYLE "fillcolor = " BRIGHT_RED   " color = red];\n",   list.head);
-    fprintf(output_file, "\tnode_tail [" SHAPE " label = \"tail | %d\"" STYLE "fillcolor = " BRIGHT_BLUE  ", color = blue];\n",  list.tail);
-    fprintf(output_file, "\tnode_free [" SHAPE " label = \"free | %d\"" STYLE "fillcolor = " BRIGHT_GREEN ", color = green];\n", list.free);
+    fprintf(output_file, "\tnode_head [" SHAPE " label = \"head | %d\"" STYLE "fillcolor = " BRIGHT_RED   " color = red];\n",    get_head(list));
+    fprintf(output_file, "\tnode_tail [" SHAPE " label = \"tail | %d\"" STYLE "fillcolor = " BRIGHT_BLUE  ", color = blue];\n",  get_tail(list));
+    fprintf(output_file, "\tnode_free [" SHAPE " label = \"free | %d\"" STYLE "fillcolor = " BRIGHT_GREEN ", color = green];\n", list->free);
 
     //--------------------------------- D A T A  --  E D G E  -----------------------------------------------
 
     fprintf(output_file, "\n\t{\n");
     fprintf(output_file, "\tedge [color = white, weight = 1000];\n\n");
 
-    for (size_t el_ind = 0; el_ind < list.size - 1; el_ind++)
+    for (size_t el_ind = 0; el_ind < list->size - 1; el_ind++)
         fprintf(output_file, "\tnode_%d -> node_%d;\n", el_ind, el_ind + 1);
 
     fprintf(output_file, "\t}\n");  
 
-    //--------------------------------  N E X T  --  E D G E  -----------------------------------------------
-
+    //----------------------------------------  E D G E  -----------------------------------------------
     fprintf(output_file, "\n\t{\n");
-    fprintf(output_file, "\tedge [color = red, constraint = false];\n\n");
+    fprintf(output_file, "\tedge [color = black, constraint = false, dir = both, style = bold];\n\n");
 
-    for (size_t el_ind = list.head;  list.next[el_ind] != 0;  el_ind = list.next[el_ind])
-        fprintf(output_file, "\tnode_%d -> node_%d;\n", el_ind, list.next[el_ind]);
+    if (list->next[0] == list->prev[0])
+        fprintf(output_file, "\tnode_0 -> node_%d;\n", list->next[0]);
     
-    fprintf(output_file, "\tnode_%d -> node_0;\n", list.tail);
+    else {
+        for (size_t idx = 0; idx < list->size; idx++) {
 
-    fprintf(output_file, "\t}\n\n");
+            if (list->next[idx] > list->size ||
+                list->prev[idx] > list->size) {
+                fprintf(output_file, "\tnode_%d -> node_%d [color = red, style = bold, dir = LR];\n" , idx, list->next[idx]);
+                fprintf(output_file, "\tnode_%d -> node_%d [color = blue, style = bold, dir = LR];\n", list->prev[idx], idx);
+                continue;
+            }
 
-
-    //--------------------------------  P R E V  --  E D G E  -----------------------------------------------
-
-    fprintf(output_file, "\n\t{\n");
-    fprintf(output_file, "\tedge [color = blue, constraint = false];\n\n");
-
-    for (size_t el_ind = list.tail;  list.prev[el_ind] != 0;  el_ind = list.prev[el_ind])
-        fprintf(output_file, "\tnode_%d -> node_%d;\n", el_ind, list.prev[el_ind]);
-
-    fprintf(output_file, "\tnode_%d -> node_0;\n", list.head);
+            if (list->prev[ list->next[idx] ] == idx)
+                fprintf(output_file, "\tnode_%d -> node_%d;\n", idx, list->next[idx]);
+        }
+    }
 
     fprintf(output_file, "\t}\n\n");
 
@@ -147,11 +144,11 @@ ListErr List_Dump_graphviz(ListStruct list, FILE* output_file) {
         fprintf(output_file, "\n\t{\n");
         fprintf(output_file, "\tedge [color = green, constraint = false];\n\n");
 
-        size_t el_ind = list.free;
+        size_t el_ind = list->free;
 
-        while (list.next[el_ind] != 0) {
-            fprintf(output_file, "\tnode_%d -> node_%d;\n", el_ind, list.next[el_ind]);
-            el_ind = list.next[el_ind];
+        while (list->next[el_ind] != 0) {
+            fprintf(output_file, "\tnode_%d -> node_%d;\n", el_ind, list->next[el_ind]);
+            el_ind = list->next[el_ind];
         }
 
         fprintf(output_file, "\tnode_%d -> node_0;\n", el_ind);
@@ -162,80 +159,60 @@ ListErr List_Dump_graphviz(ListStruct list, FILE* output_file) {
 
     fprintf(output_file, "\n\t{\n");
 
-    fprintf(output_file, "\tnode_0: <head> -> node_head [color = red];\n");
-    fprintf(output_file, "\tnode_0: <tail> -> node_tail [color = blue];\n");
+    // fprintf(output_file, "\tnode_0: <head> -> node_head [color = red];\n");
+    // fprintf(output_file, "\tnode_0: <tail> -> node_tail [color = blue];\n");
 
-    fprintf(output_file, "\tnode_head -> node_%d [color = red];\n",   list.head);
-    fprintf(output_file, "\tnode_tail -> node_%d [color = blue];\n",  list.tail);
-    fprintf(output_file, "\tnode_free -> node_%d [color = green];\n", list.free);
+    fprintf(output_file, "\tnode_head -> node_%d [color = red];\n",   get_head(list));
+    fprintf(output_file, "\tnode_tail -> node_%d [color = blue];\n",  get_tail(list));
+    fprintf(output_file, "\tnode_free -> node_%d [color = green];\n", list->free);
 
     fprintf(output_file, "\t}\n\n");
 
     fprintf(output_file, "}\n");
 
-    ONDEBUG(&list)
-
     return NO_ERRORS;
 }
 
-ListErr List_Dump_HTML(ListStruct list, const char* image, const char* dump_info, FILE* output_file) {
+ListErr List_Dump_HTML(ListStruct* list, const char* image, const char* dump_info, FILE* output_file) {
     assert(output_file);
-
-    ONDEBUG(&list)
 
     fprintf(output_file, "<pre>\n");
     fprintf(output_file, "\t<h2> Dump of list (%s): </h2>\n", dump_info);
 
-    fprintf(output_file, "<h4>\tsize: %d\n", list.size);
-    fprintf(output_file, "\thead: %d\n", list.head);
-    fprintf(output_file, "\ttail: %d\n", list.tail);
-    fprintf(output_file, "\tfree: %d </h4>\n", list.free);
+    fprintf(output_file, "<h3>\tsize: %d\n", list->size);
+    fprintf(output_file, "\thead: %d\n", get_head(list));
+    fprintf(output_file, "\ttail: %d\n", get_tail(list));
+    fprintf(output_file, "\tfree: %d </h3>\n", list->free);
 
     //--------------------------------------------------------------------------------------------
 
-    fprintf(output_file, "<h4>\tdata </h4>\n\t{\n");
+    fprintf(output_file, "<h4>\t\t    data\t\t\t   next\t\t\t\t   prev</h4>\n");
 
-    for (size_t el_ind = 0; el_ind < list.size; el_ind++) {
-        if (list.data[el_ind] == POISON)
-            fprintf(output_file, "\t\t[%d]\tPOISON\n", el_ind);
+    for (size_t el_ind = 0; el_ind < list->size; el_ind++) {
+
+        if (list->data[el_ind] == POISON)
+            fprintf(output_file, "\t\t[%d]\tPOISON\t", el_ind);
         else
-            fprintf(output_file, "\t\t[%d]\t%d\n", el_ind, list.data[el_ind]);
+            fprintf(output_file, "\t\t[%d]\t%d\t", el_ind, list->data[el_ind]);
+
+        fprintf(output_file, "\t\t[%d]\t%d\t", el_ind, list->next[el_ind]);
+
+        fprintf(output_file, "\t\t[%d]\t%d\n", el_ind, list->prev[el_ind]);
     }
-    
-    fprintf(output_file, "\t}\n");
 
-    //--------------------------------------------------------------------------------------------
-
-    fprintf(output_file, "<h4>\tnext </h4>\n\t{\n");
-
-    for (size_t el_ind = 0; el_ind < list.size; el_ind++)
-        fprintf(output_file, "\t\t[%d]\t%d\n", el_ind, list.next[el_ind]);
-    
-    fprintf(output_file, "\t}\n");
-
-    //--------------------------------------------------------------------------------------------
-
-    fprintf(output_file, "<h4>\tprev </h4>\n\t{\n");
-
-    for (size_t el_ind = 0; el_ind < list.size; el_ind++)
-        fprintf(output_file, "\t\t[%d]\t%d\n", el_ind, list.prev[el_ind]);
-    
-    fprintf(output_file, "\t}\n");
+    fprintf(output_file, "\n");
 
     //--------------------------------------------------------------------------------------------
 
     fprintf(output_file, "<h4>\tImage:</h4>\n");
-    fprintf(output_file, "\t<img src = %s width = \"1000\" height = \"300\">\n\n", image);
+    fprintf(output_file, "\t<img src = %s width = \"1500\" height = \"300\">\n\n", image);
 
     fprintf(output_file, "</pre>");
-
-    ONDEBUG(&list)
 
     return NO_ERRORS;
 }
 
 ListErr Unit_tests(void) {
-    ONDEBUG(list)
 
     const int SIZE_OF_LIST = 9;
 
@@ -246,10 +223,9 @@ ListErr Unit_tests(void) {
     int correct_prev[SIZE_OF_LIST + 1] = {0};
 
     ListStruct list = List_Ctor(SIZE_OF_LIST);
-    ListStruct* pointer_list = &list;
 
     #define ONE_TEST_CHECK                                                                 \
-        test_result = One_test_check(list, correct_data, correct_next, correct_prev);      \
+        test_result = One_test_check(&list, correct_data, correct_next, correct_prev);     \
         if (test_result == UNIT_TEST_FAILED) {                                             \
             List_Dtor(&list);                                                              \
             return UNIT_TEST_FAILED;                                                       \
@@ -312,7 +288,7 @@ ListErr Unit_tests(void) {
 		correct_data[7] =     POISON;       correct_next[7] = 8;      correct_prev[7] = 0;
 		correct_data[8] =     POISON;       correct_next[8] = 9;      correct_prev[8] = 0;
         correct_data[9] =     POISON;       correct_next[9] = 0;      correct_prev[9] = 0;
-
+        
     ONE_TEST_CHECK
 
     List_Insert_before(&list, 2, 15);
@@ -353,7 +329,6 @@ ListErr Unit_tests(void) {
     List_Insert_after(&list, 1, 7);
     List_Insert_after(&list, 1, 8);
 
-    pointer_list = List_Realloc(&list);
 
     #undef ONE_TEST_CHECK
 
@@ -362,14 +337,14 @@ ListErr Unit_tests(void) {
     return UNIT_TEST_PASSED;
 }
 
-ListErr One_test_check(ListStruct list, int* correct_data, int* correct_next, int* correct_prev) {
-    ONDEBUG(&list)
+ListErr One_test_check(ListStruct* list, int* correct_data, int* correct_next, int* correct_prev) {
+    ONDEBUG(list, NO_INDEX)
 
-    for (size_t el_ind = 0; el_ind < list.size - 1; el_ind++) {
+    for (size_t el_ind = 0; el_ind < list->size - 1; el_ind++) {
 
-        if (list.data[el_ind] != correct_data[el_ind] || 
-            list.next[el_ind] != correct_next[el_ind] ||
-            list.prev[el_ind] != correct_prev[el_ind]  )
+        if (list->data[el_ind] != correct_data[el_ind] || 
+            list->next[el_ind] != correct_next[el_ind] ||
+            list->prev[el_ind] != correct_prev[el_ind]  )
         {
             fprintf(LogFile, "Unit test is failed at index [%d]\n", el_ind);
             
@@ -377,36 +352,36 @@ ListErr One_test_check(ListStruct list, int* correct_data, int* correct_next, in
 
             fprintf(LogFile, "data:\n");
 
-            for (size_t el_num = 0; el_num < list.size; el_num++)
-                fprintf(LogFile, "\t\t[%d]\t%d\n", el_num, list.data[el_num]);
+            for (size_t el_num = 0; el_num < list->size; el_num++)
+                fprintf(LogFile, "\t\t[%d]\t%d\n", el_num, list->data[el_num]);
 
             fprintf(LogFile, "Should be:\n");
 
-            for (size_t el_num = 0; el_num < list.size; el_num++)
+            for (size_t el_num = 0; el_num < list->size; el_num++)
                 fprintf(LogFile, "\t\t[%d]\t%d\n", el_num, correct_data[el_num]);
 
             //---------------------------------------------------------------------
 
             fprintf(LogFile, "next:\n");
 
-            for (size_t el_num = 0; el_num < list.size; el_num++)
-                fprintf(LogFile, "\t\t[%d]\t%d\n", el_num, list.next[el_num]);
+            for (size_t el_num = 0; el_num < list->size; el_num++)
+                fprintf(LogFile, "\t\t[%d]\t%d\n", el_num, list->next[el_num]);
 
             fprintf(LogFile, "Should be:\n");
 
-            for (size_t el_num = 0; el_num < list.size; el_num++)
+            for (size_t el_num = 0; el_num < list->size; el_num++)
                 fprintf(LogFile, "\t\t[%d]\t%d\n", el_num, correct_next[el_num]);
 
             //---------------------------------------------------------------------
 
             fprintf(LogFile, "prev:\n");
 
-            for (size_t el_num = 0; el_num < list.size; el_num++)
-                fprintf(LogFile, "\t\t[%d]\t%d\n", el_num, list.prev[el_num]);
+            for (size_t el_num = 0; el_num < list->size; el_num++)
+                fprintf(LogFile, "\t\t[%d]\t%d\n", el_num, list->prev[el_num]);
 
             fprintf(LogFile, "Should be:\n");
 
-            for (size_t el_num = 0; el_num < list.size; el_num++)
+            for (size_t el_num = 0; el_num < list->size; el_num++)
                 fprintf(LogFile, "\t\t[%d]\t%d\n", el_num, correct_prev[el_num]);
 
             return UNIT_TEST_FAILED;
@@ -414,7 +389,16 @@ ListErr One_test_check(ListStruct list, int* correct_data, int* correct_next, in
 
     }
 
-    ONDEBUG(&list)
+    ONDEBUG(list, NO_INDEX)
 
     return UNIT_TEST_PASSED;
+}
+
+int is_free (ListStruct* list, size_t idx) {
+
+    if (get_prev(list, idx) == 0 &&
+        get_data(list, idx) == POISON)
+        return IS_FREE;
+
+    return NOT_FREE;
 }

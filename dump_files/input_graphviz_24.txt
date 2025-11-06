@@ -1,6 +1,6 @@
 digraph List {
 	rankdir = LR;
-	node [shape = Mrecord, style = "filled",  fillcolor = "#FFC0C0", color = red];
+	node [shape = Mrecord, style = "filled",  fillcolor = red, color = red];
 
 	node_0 [shape = Mrecord, style = "filled", fillcolor = "#ffff94ff", color = "#cdcd00ff", label = "ind = 0 | POISON | { <tail> prev = 3 | <head> next = 1 } "];
 	node_1 [shape = Mrecord, style = "filled", fillcolor = "#C0C0FF", color = blue, label = "ind = 1 | 10 | { prev = 0 | next = 8 } "];
@@ -32,30 +32,17 @@ digraph List {
 	}
 
 	{
-	edge [color = red, constraint = false];
+	edge [color = black, constraint = false, dir = both, style = bold];
 
+	node_0 -> node_1;
 	node_1 -> node_8;
-	node_8 -> node_7;
-	node_7 -> node_6;
-	node_6 -> node_5;
-	node_5 -> node_4;
-	node_4 -> node_2;
 	node_2 -> node_3;
 	node_3 -> node_0;
-	}
-
-
-	{
-	edge [color = blue, constraint = false];
-
-	node_3 -> node_2;
-	node_2 -> node_4;
-	node_4 -> node_5;
-	node_5 -> node_6;
-	node_6 -> node_7;
-	node_7 -> node_8;
-	node_8 -> node_1;
-	node_1 -> node_0;
+	node_4 -> node_2;
+	node_5 -> node_4;
+	node_6 -> node_5;
+	node_7 -> node_6;
+	node_8 -> node_7;
 	}
 
 
@@ -67,8 +54,6 @@ digraph List {
 
 
 	{
-	node_0: <head> -> node_head [color = red];
-	node_0: <tail> -> node_tail [color = blue];
 	node_head -> node_1 [color = red];
 	node_tail -> node_3 [color = blue];
 	node_free -> node_9 [color = green];

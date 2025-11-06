@@ -1,17 +1,18 @@
 digraph List {
 	rankdir = LR;
-	node [shape = Mrecord, style = "filled",  fillcolor = "#FFC0C0", color = red];
+	node [shape = Mrecord, style = "filled",  fillcolor = red, color = red];
 
 	node_0 [shape = Mrecord, style = "filled", fillcolor = "#ffff94ff", color = "#cdcd00ff", label = "ind = 0 | POISON | { <tail> prev = 3 | <head> next = 1 } "];
 	node_1 [shape = Mrecord, style = "filled", fillcolor = "#C0C0FF", color = blue, label = "ind = 1 | 10 | { prev = 0 | next = 3 } "];
-	node_2 [shape = Mrecord, style = "filled", fillcolor = "#C0FFC0", color = green, label = "ind = 2 | POISON | { prev = 0 | next = 4 } "];
+	node_2 [shape = Mrecord, style = "filled", fillcolor = "#C0C0FF", color = blue, label = "ind = 2 | -559023410 | { prev = 0 | next = 4 } "];
 	node_3 [shape = Mrecord, style = "filled", fillcolor = "#C0C0FF", color = blue, label = "ind = 3 | 15 | { prev = 1 | next = 0 } "];
-	node_4 [shape = Mrecord, style = "filled", fillcolor = "#C0FFC0", color = green, label = "ind = 4 | POISON | { prev = 0 | next = 5 } "];
-	node_5 [shape = Mrecord, style = "filled", fillcolor = "#C0FFC0", color = green, label = "ind = 5 | POISON | { prev = 0 | next = 6 } "];
-	node_6 [shape = Mrecord, style = "filled", fillcolor = "#C0FFC0", color = green, label = "ind = 6 | POISON | { prev = 0 | next = 7 } "];
-	node_7 [shape = Mrecord, style = "filled", fillcolor = "#C0FFC0", color = green, label = "ind = 7 | POISON | { prev = 0 | next = 8 } "];
-	node_8 [shape = Mrecord, style = "filled", fillcolor = "#C0FFC0", color = green, label = "ind = 8 | POISON | { prev = 0 | next = 9 } "];
-	node_9 [shape = Mrecord, style = "filled", fillcolor = "#C0FFC0", color = green, label = "ind = 9 | POISON | { prev = 0 | next = 0 } "];
+	node_4 [shape = Mrecord, style = "filled", fillcolor = "#C0C0FF", color = blue, label = "ind = 4 | -559023410 | { prev = 0 | next = 5 } "];
+	node_5 [shape = Mrecord, style = "filled", fillcolor = "#C0C0FF", color = blue, label = "ind = 5 | -559023410 | { prev = 0 | next = 6 } "];
+	node_6 [shape = Mrecord, style = "filled", fillcolor = "#C0C0FF", color = blue, label = "ind = 6 | -559023410 | { prev = 0 | next = 7 } "];
+	node_7 [shape = Mrecord, style = "filled", fillcolor = "#C0C0FF", color = blue, label = "ind = 7 | -559023410 | { prev = 0 | next = 8 } "];
+	node_8 [shape = Mrecord, style = "filled", fillcolor = "#C0C0FF", color = blue, label = "ind = 8 | -559023410 | { prev = 0 | next = 9 } "];
+	node_9 [shape = Mrecord, style = "filled", fillcolor = "#C0C0FF", color = blue, label = "ind = 9 | -559023410 | { prev = 0 | next = 10 } "];
+	node_10 [shape = Mrecord, style = "filled", fillcolor = "#C0C0FF", color = blue, label = "ind = 10 | -559023410 | { prev = 0 | next = 0 } "];
 
 	node_head [shape = Mrecord,  label = "head | 1"style = "filled", fillcolor = "#FFC0C0" color = red];
 	node_tail [shape = Mrecord,  label = "tail | 3"style = "filled", fillcolor = "#C0C0FF", color = blue];
@@ -29,21 +30,15 @@ digraph List {
 	node_6 -> node_7;
 	node_7 -> node_8;
 	node_8 -> node_9;
+	node_9 -> node_10;
 	}
 
 	{
-	edge [color = red, constraint = false];
+	edge [color = black, constraint = false, dir = both, style = bold];
 
+	node_0 -> node_1;
 	node_1 -> node_3;
 	node_3 -> node_0;
-	}
-
-
-	{
-	edge [color = blue, constraint = false];
-
-	node_3 -> node_1;
-	node_1 -> node_0;
 	}
 
 
@@ -56,13 +51,12 @@ digraph List {
 	node_6 -> node_7;
 	node_7 -> node_8;
 	node_8 -> node_9;
-	node_9 -> node_0;
+	node_9 -> node_10;
+	node_10 -> node_0;
 	}
 
 
 	{
-	node_0: <head> -> node_head [color = red];
-	node_0: <tail> -> node_tail [color = blue];
 	node_head -> node_1 [color = red];
 	node_tail -> node_3 [color = blue];
 	node_free -> node_2 [color = green];
